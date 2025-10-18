@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
         {
 
             AttackCombo();
-            Debug.Log(clickCount);
+            // Debug.Log(clickCount);
             Invoke("AttackEnd", 0.5f);
         }
 
@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
     void Hit()
     {
         //攻撃ヒット時に使う？
-        Debug.Log("攻撃ヒット");
+        // Debug.Log("攻撃ヒット");
     }
 
 
