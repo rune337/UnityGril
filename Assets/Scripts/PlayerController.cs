@@ -12,10 +12,6 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     Animator animator;
 
-    float clickCount = 0; //ゲームが開始されてからの経過時間（秒）
-    float lastClickTime = 0f; //前回クリックしたときの Time.time を記録しておく変数
-    float clickMaxDelay = 1.0f; //クリックの猶予時間
-
     // Start is called before the first frame update
     void Start()
     {
@@ -37,8 +33,7 @@ public class PlayerController : MonoBehaviour
 
         if (diff.magnitude > 0.001f)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation,
-                Quaternion.LookRotation(diff), 0.2f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(diff), 0.2f);
         }
 
         moving = new Vector3(x, 0, z);
@@ -58,14 +53,6 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isRun", false);
         }
 
-        //攻撃のアニメーション
-        if (Input.GetMouseButtonDown(0))
-        {
-
-            AttackCombo();
-            // Debug.Log(clickCount);
-            Invoke("AttackEnd", 0.5f);
-        }
 
     }
 
@@ -89,32 +76,6 @@ public class PlayerController : MonoBehaviour
     void Hit()
     {
         //攻撃ヒット時に使う？
-        // Debug.Log("攻撃ヒット");
+        Debug.Log("攻撃ヒット");
     }
-
-
-    void AttackEnd()
-    {
-        //攻撃アニメーション終了時の処理
-        animator.SetFloat("Attack", 0f);
-    }
-
-    void AttackCombo()
-    {
-        float timeSinceLastClick = Time.time - lastClickTime; //前回クリックしてからの経過時間
-        if (timeSinceLastClick > clickMaxDelay)
-        {
-            clickCount = 1; //時間を越えると新しい攻撃にする
-        }
-        else
-        {
-            clickCount++; //時間内なので攻撃増加
-            if (clickCount > 5)
-                clickCount = 1; //コンボ数最大4なのでそれを超えたら1にリセットする
-        }
-        lastClickTime = Time.time;
-        animator.SetFloat("Attack", clickCount);
-    }
-
-
 }

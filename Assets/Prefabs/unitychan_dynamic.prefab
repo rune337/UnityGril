@@ -7748,6 +7748,7 @@ GameObject:
   - component: {fileID: 319952846283463734}
   - component: {fileID: 302188276189678008}
   - component: {fileID: 6375076213839224159}
+  - component: {fileID: 3346889663078933395}
   m_Layer: 0
   m_Name: unitychan_dynamic
   m_TagString: Player
@@ -8061,6 +8062,18 @@ CapsuleCollider:
   m_Height: 2.0384316
   m_Direction: 1
   m_Center: {x: -0.007074803, y: 0.93722963, z: 0}
+--- !u!114 &3346889663078933395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8503360016795610297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12e4275468fd84f83960ecdf1b50c29b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8512451528836919558
 GameObject:
   m_ObjectHideFlags: 0

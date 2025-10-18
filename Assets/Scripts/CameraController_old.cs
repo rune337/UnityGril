@@ -25,6 +25,7 @@ public class CameraController_old : MonoBehaviour
         y = angles.x;
 
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false; //カーソルを非表示
     }
 
     void FixedUpdate()

@@ -502,6 +502,36 @@ MonoBehaviour:
   zoomSpeed: 5
   minZoom: 2
   maxZoom: 10
+--- !u!1 &777565760 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8503360016795610297, guid: f6479a391f2114375a97d57ab334b068, type: 3}
+  m_PrefabInstance: {fileID: 3349350459826967791}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &777565773
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777565760}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &913618360
 GameObject:
   m_ObjectHideFlags: 0
@@ -693,10 +723,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1619001495779170671, guid: f6479a391f2114375a97d57ab334b068, type: 3}
-      propertyPath: m_Name
-      value: Sword
-      objectReference: {fileID: 0}
     - target: {fileID: 1914093326620604012, guid: f6479a391f2114375a97d57ab334b068, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -744,7 +770,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8503360016795610297, guid: f6479a391f2114375a97d57ab334b068, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 777565773}
   m_SourcePrefab: {fileID: 100100000, guid: f6479a391f2114375a97d57ab334b068, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

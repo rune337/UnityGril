@@ -4,8 +4,6 @@ using UnityEngine.InputSystem;
 public class CameraController : MonoBehaviour
 {
    
-
-    
     GameObject player; 
     Vector3 playerPos; 
     Vector3 defaultPos = new Vector3(0,4,-4); 
@@ -33,6 +31,9 @@ public class CameraController : MonoBehaviour
         transform.position = playerPos;
         transform.position = playerPos + defaultPos;
         Debug.Log("カメラ位置 " + transform.position);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false; //カーソルを非表示
     }
 
     // Update is called once per frame
