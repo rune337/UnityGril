@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Enemy
   - Sward
+  - Enemy_Base
+  - Player_Base
+  - Enemy_Leader
+  - Base
   layers:
   - Default
   - TransparentFX

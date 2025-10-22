@@ -20,7 +20,7 @@ public class EnemyController : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !SwaordAttack.isAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
+        if (isInvincible || !SwordAttack.isAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
             return;
 
 

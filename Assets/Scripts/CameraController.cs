@@ -39,6 +39,12 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //プレイヤーいなくなった時
+        if (player == null)
+        {
+            return;
+        }
+        
         float mouseX = Input.GetAxis("Mouse X") * sensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
 
@@ -71,7 +77,12 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
-       
+        //プレイヤーいなくなった時
+        if (player == null)
+        {
+            return;
+        }
+        
         Vector3 offset = Quaternion.Euler(pitch, yaw, 0f) * new Vector3(0, 0, -currentZoom);
         transform.position = player.transform.position + offset;
 

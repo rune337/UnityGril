@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float Speed, RunSpeed;
-    float x,z;
+    float x, z;
     Vector3 moving, diff, Player_pos;
     Rigidbody rb;
     Animator animator;
@@ -15,6 +15,12 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer; // 接地判定で判定する地面のレイヤー
     private bool isGrounded; // 接地しているかどうかのフラグ
 
+
+
+    //HP周り
+    bool isInvincible = false; // 無敵状態を表すフラグ
+    int enemyHP = 10;
+    public float invincibilityDuration = 0.5f; //無敵時間
 
     // Start is called before the first frame update
     void Start()
@@ -57,13 +63,13 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isRun", false);
         }
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, 0.2f, groundLayer); 
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.2f, groundLayer);
         if (isGrounded && rb.linearVelocity.y <= 0.01f) //落下完了時
         {
             animator.SetBool("isJump", false);
         }
 
- 
+
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
@@ -107,6 +113,47 @@ public class PlayerController : MonoBehaviour
     void Hit()
     {
         //攻撃ヒット時に使う？
-        Debug.Log("攻撃ヒット");
+        // Debug.Log("攻撃ヒット");
+    }
+
+
+
+    //ダメージ処理
+    void OnTriggerEnter(Collider other)
+    {
+        if (isInvincible || !EnemyLeaderController.isAttack) //無敵状態または敵が攻撃中でなければ何もしない
+            return;
+
+
+        if (other.gameObject.CompareTag("Sward"))
+        {
+            isInvincible = true; //ダメージを受けたら無敵
+            enemyHP--;
+            Debug.Log("味方のHP " + enemyHP);
+
+            //無敵時間を開始するコルーチンを呼び出す
+            StartCoroutine(SetInvincibilityTimer());
+
+        }
+
+        if (enemyHP < 1)
+        {
+            Destroy(this.gameObject);
+            GameManager.gameState = GameState.gameClear;
+        }
+
+
+    }
+
+
+
+     IEnumerator SetInvincibilityTimer()
+    {
+        //指定された時間だけ待機
+        yield return new WaitForSeconds(invincibilityDuration);
+
+        //時間が経過したら無敵状態を解除
+        isInvincible = false;
+
     }
 }
