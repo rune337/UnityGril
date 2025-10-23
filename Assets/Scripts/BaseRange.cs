@@ -13,8 +13,6 @@ public class BaseRange : MonoBehaviour
     private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
 
 
-
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -37,23 +35,25 @@ public class BaseRange : MonoBehaviour
             //プレイヤーが侵入
             if (other.gameObject.tag == "Player")
             {
-                this.tag = "Player_Base"; //拠点の陣営タグ変更
-                baseCore.tag = "Player_Base"; //コアの陣営タグ変更
+                this.tag = "Player_Ba"; //拠点の陣営タグ変更
+                baseCore.tag = "Player_Ba"; //コアの陣営タグ変更
 
                 // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
                 baseCoreChangeColor.SetColor(playerColor);
-
+                GameManager.Instance.RefreshBaseCoreOnce();
             }
 
             //敵侵入
             else if (other.gameObject.tag.Contains("Enemy"))
             {
-                this.tag = "Enemy_Base";//拠点の陣営タグ変更
-                baseCore.tag = "Enemy_Base";//コアの陣営タグ変更
+                this.tag = "Enemy_Ba";//拠点の陣営タグ変更
+                baseCore.tag = "Enemy_Ba";//コアの陣営タグ変更
 
                 // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
                 baseCoreChangeColor.SetColor(enemyColor);
+                GameManager.Instance.RefreshBaseCoreOnce();
             }
+             GameManager.Instance.RefreshBaseCoreOnce();
 
         }
 
@@ -63,19 +63,19 @@ public class BaseRange : MonoBehaviour
     public void ChangeCoreTag()
     {
         //敵からプレイヤーにする
-        if (this.tag == "Enemy_Base")
+        if (this.tag == "Enemy_Ba")
         {
-            this.tag = "Player_Base";
-            baseCore.tag = "Player_Base";
+            this.tag = "Player_Ba";
+            baseCore.tag = "Player_Ba";
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(playerColor);
         }
 
         //プレイヤーから敵にする
-        else if (this.tag == "Player_Base")
+        else if (this.tag == "Player_Ba")
         {
-            this.tag = "Enemy_Base";
-            baseCore.tag = "Enemy_Base";
+            this.tag = "Enemy_Ba";
+            baseCore.tag = "Enemy_Ba";
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(enemyColor);
 

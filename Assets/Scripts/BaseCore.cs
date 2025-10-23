@@ -13,23 +13,27 @@ public class Core : MonoBehaviour
     public BaseRange baseRange; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+        //現在のcoreのタグを元に攻撃者のタグに含まれる文字を検索する文字を決定する
+        if (this.tag == "Player_Ba")
+        {
+            target = "Player";
+        }
+        else if (this.tag == "Enemy_Ba")
+        {
+            target = "Enemy";
+        }
+         else if(this.tag == "Base")
+        {
+            target = "Base";
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //現在のcoreのタグを元に攻撃者のタグに含まれる文字を検索する文字を決定する
-        if (this.tag == "Player_Base")
-        {
-            target = "Player";
-        }
-        else if (this.tag == "Enemy_Base")
-        {
-            target = "Enemy";
-        }
+        
 
     }
 

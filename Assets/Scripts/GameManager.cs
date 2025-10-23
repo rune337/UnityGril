@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq; // LINQを使うために必要
+using System;
 
 public enum GameState
 {
@@ -23,6 +24,8 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        FindBaseObjects(tagToSearch);
     }
 
     public string tagToSearch = "Base";
@@ -30,14 +33,22 @@ public class GameManager : MonoBehaviour
 
     private List<GameObject> foundBaseObjects = new List<GameObject>();
 
+    public event Action<List<GameObject>> OnBaseCoreUpdated;
+
     void Start()
     {
-        RefreshBaseCoreList();
+
     }
 
     void Update()
     {
-        // ゲーム状態に応じた処理
+    }
+
+
+    public void RefreshBaseCoreOnce()
+    {
+        FindBaseObjects(tagToSearch);
+        OnBaseCoreUpdated?.Invoke(foundBaseObjects);
     }
 
     // タグから BaseCore を探してリスト化
@@ -48,16 +59,29 @@ public class GameManager : MonoBehaviour
         // タグで検索
         GameObject[] baseObjects = GameObject.FindGameObjectsWithTag(tag);
 
-        // 名前が "BaseCore" のものだけ追加
-        foundBaseObjects = baseObjects.Where(obj => obj != null && obj.name == "BaseCore").ToList();
+        // 名前に "BaseCore" を含むものをリストに追加
+        foundBaseObjects = baseObjects.Where(obj => obj != null && obj.name.Contains("BaseCore", StringComparison.OrdinalIgnoreCase)).ToList();
 
-        Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+
+        // Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+        if (baseObjects.Length > 0)
+        {
+            foreach (GameObject obj in baseObjects)
+            {
+                if (obj != null)
+                {
+                    Debug.Log($"- {obj.name} (Tag: {obj.tag}, Instance ID: {obj.GetInstanceID()})");
+                }
+            }
+        }
     }
 
-    public void RefreshBaseCoreList()
-    {
-        FindBaseObjects(tagToSearch);
-    }
+    // public void RefreshBaseCoreList()
+    // {
+    //     FindBaseObjects(tagToSearch);
+    // }
+
+
 
     public List<GameObject> GetFoundBaseObjects()
     {

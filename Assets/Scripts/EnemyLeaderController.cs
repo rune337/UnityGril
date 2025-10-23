@@ -4,20 +4,19 @@ using RPGCharacterAnims.Actions;
 using RPGCharacterAnims.Extensions;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem.LowLevel;
-using System.Linq; // LINQを使用するために必要
+using System.Collections.Generic;
 
 public class EnemyLeaderController : MonoBehaviour
 {
     private NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
     GameObject player;
-    GameObject targetBaseCore;
+    GameObject closestObject; //一番近いベースコア
 
     public float attackRange = 0.5f; //攻撃を開始する距離
     public float stopRange = 2f; //接近限界距離
 
     public float baseDiscrimination = 10f; //Base判別範囲
-    public string targetTag = "Player_Base"; //Base判別範囲でターゲットとするベースコアのタグ
+    public string targetTag = "Player_Ba"; //Base判別範囲でターゲットとするベースコアのタグ
 
     public float detectionRange = 80f; //索敵範囲
     public float detectionRangeBaseCore = 1000f; //ベースコア捜索範囲
@@ -32,12 +31,15 @@ public class EnemyLeaderController : MonoBehaviour
 
     float attackTimer; //攻撃可能になる時間
     float DistanceToPlayer; //プレイヤーとの距離
-    float DistanceToBaseCore; //ベースコアとの距離
+    float[] DistanceToBaseCore; //ベースコアとの距離
+    float distanceToClosestObject; //一番近いベースコアとの距離
 
 
     float lastAttackTime = 0f; //前回攻撃したときのTime.timeを記録しておく変数
     float comboResetTime = 1.0f; //攻撃の猶予時間
     float attackCount; //enemyの攻撃回数
+
+    public List<GameObject> baseCoreList; //GameManagerから引っ張ってきたリストBaseCore
 
 
     //HP周り
@@ -46,6 +48,24 @@ public class EnemyLeaderController : MonoBehaviour
     public float invincibilityDuration = 0.5f; //無敵時間
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    //ベースコアとの距離とオブジェクトを紐づける構造体を宣言
+    public struct BaseCoreDistanceInfo
+    {
+        public GameObject baseCoreObject; // GameObject は参照型なので、ここに格納されるのは参照
+        public float distance;
+
+        // 構造体にもコンストラクタを定義できる
+        public BaseCoreDistanceInfo(GameObject obj, float dist)
+        {
+            baseCoreObject = obj;
+            distance = dist;
+        }
+    }
+
+    private List<BaseCoreDistanceInfo> allBaseCoreDistances = new List<BaseCoreDistanceInfo>(); //構造体リスト定義
+
+
     void Start()
     {
         attackTimer = Time.time;
@@ -53,26 +73,59 @@ public class EnemyLeaderController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         animator = GetComponent<Animator>();
 
-        targetBaseCore = GameManager.Instance.GetFoundBaseObjects().FirstOrDefault(obj => obj != null && obj.name == "BaseCore");
+        baseCoreList = GameManager.Instance.GetFoundBaseObjects();
 
-        if (targetBaseCore == null)
+        if (baseCoreList == null || baseCoreList.Count == 0)
         {
             Debug.LogWarning("BaseCore がまだ登録されていません。StartCoroutineで待機します。");
-            StartCoroutine(WaitForBaseCore());
+            StartCoroutine(WaitForBaseCoreAndPopulateDistances());
         }
+        else
+        {
+            // Start時点でベースコアがある場合はここで距離情報を生成
+            PopulateAllBaseCoreDistances();
+        }
+
     }
 
-    IEnumerator WaitForBaseCore()
+    IEnumerator WaitForBaseCoreAndPopulateDistances()
     {
         while (GameManager.Instance.GetFoundBaseObjects().Count == 0)
         {
             yield return null; // 次のフレームまで待つ
         }
 
-        targetBaseCore = GameManager.Instance.GetFoundBaseObjects()
-            .FirstOrDefault(obj => obj != null && obj.name == "BaseCore");
+        //配列に入れて順番に距離を算出していく
+        baseCoreList = GameManager.Instance.GetFoundBaseObjects();
+        Debug.Log("BaseCore リストを GameManager から取得しました。");
 
-        Debug.Log("BaseCore を取得しました: " + targetBaseCore.name);
+        // コルーチンで待機後に距離情報を生成する
+        PopulateAllBaseCoreDistances();
+    }
+
+    // allBaseCoreDistances に距離情報を生成する新しいメソッド
+    void PopulateAllBaseCoreDistances()
+    {
+        if (baseCoreList == null || baseCoreList.Count == 0)
+        {
+            // Debug.LogWarning("PopulateAllBaseCoreDistances: baseCoreList が null または空のため、距離情報を生成できません。");
+            return;
+        }
+
+        allBaseCoreDistances.Clear(); // ！！毎回クリアすることが非常に重要！！
+
+        for (int i = 0; i < baseCoreList.Count; i++)
+        {
+            if (baseCoreList[i] == null)
+            {
+                Debug.LogWarning($"BaseCoreList[{i}] が null です。スキップします。");
+                continue;
+            }
+            float distance = Vector3.Distance(baseCoreList[i].transform.position, transform.position);
+            allBaseCoreDistances.Add(new BaseCoreDistanceInfo(baseCoreList[i], distance));
+            //Debug.Log($"距離情報追加: {baseCoreList[i].name}, 距離: {distance}");
+        }
+        // Debug.Log($"PopulateAllBaseCoreDistances 完了。要素数: {allBaseCoreDistances.Count}");
     }
 
 
@@ -80,7 +133,7 @@ public class EnemyLeaderController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (targetBaseCore == null)
+        if (baseCoreList == null)
             return; // まだ BaseCore を取得していなければ何もしない
 
         //プレイヤーいなくなった時
@@ -91,21 +144,39 @@ public class EnemyLeaderController : MonoBehaviour
 
         //プレイヤーとの距離
         DistanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
-        //ベースコアとの距離
-        DistanceToBaseCore = Vector3.Distance(targetBaseCore.transform.position, transform.position);
-        // Debug.Log("DistanceToBaseCore: " + DistanceToBaseCore); // 距離をログ出力
 
-        //索敵範囲の時
+        //それぞれのベースコアとの距離
+        // PopulateAllBaseCoreDistances();
+
+        // Debug.Log(ClosestBaseCoreObject()); //一番近いベースコアオブジェクト
+        closestObject = ClosestBaseCoreObject();
+        if (closestObject != null)
+        {
+            distanceToClosestObject = Vector3.Distance(closestObject.transform.position, transform.position); //一番近いベースコアオブジェクトとの距離
+            Debug.Log(closestObject.name);
+
+            //ベースコアとの距離よりベースコアの索敵範囲が広い時
+            if (distanceToClosestObject <= detectionRangeBaseCore)
+            {
+                MoveBaseCore(closestObject);
+            }
+
+        }
+
         if (DistanceToPlayer <= detectionRange)
         {
             MovePlayer();
         }
 
-        //ベースコアとの距離よりベースコアの索敵範囲が広い時
-        else if (DistanceToBaseCore <= detectionRangeBaseCore)
-        {
-            MoveBaseCore();
-        }
+        // ★デバッグログを追加
+        // if (closestObject == null)
+        // {
+        //     Debug.LogError("Update: ClosestBaseCoreObject は null でした。この後の処理はスキップされます。");
+        //     return;
+        // }
+
+        //索敵範囲の時
+
 
     }
 
@@ -231,7 +302,7 @@ public class EnemyLeaderController : MonoBehaviour
     }
 
 
-    void MoveBaseCore()
+    void MoveBaseCore(GameObject closestObject)
     {
         //player索敵範囲外の時は拠点を取得しにいくもしくは攻撃しにいく
         if (GameManager.Instance.GetFoundBaseObjects().Count > 0)
@@ -246,22 +317,26 @@ public class EnemyLeaderController : MonoBehaviour
             if (lockOn)
             {
                 //BaseCoreの方を向く (Y軸は固定して水平に回転)
-                Vector3 lookAtPosition = targetBaseCore.transform.position;
+                Vector3 lookAtPosition = closestObject.transform.position;
                 lookAtPosition.y = transform.position.y;
                 transform.LookAt(lookAtPosition);
             }
 
-            if (DistanceToBaseCore > 2.7f)
+            if (distanceToClosestObject > 2.7f)
             {
                 navMeshAgent.isStopped = false;
-                navMeshAgent.SetDestination(targetBaseCore.transform.position);
+                navMeshAgent.SetDestination(closestObject.transform.position);
                 animator.SetBool("isRun", true);
             }
 
-            else if (DistanceToBaseCore <= 2.7f)
+            else if (distanceToClosestObject <= 2.7f)
             {
                 navMeshAgent.isStopped = true;
                 animator.SetBool("isRun", false);
+
+                //まだベースコアがいれば次なる拠点へ向かうために停止を解除する
+                // if (GameManager.Instance.GetFoundBaseObjects().Count > 0)
+                //     animator.SetBool("isRun", true);
 
                 // 範囲内にプレイヤーのベースコアがいるとき
                 if (CheckForSpecificTagInRadius())
@@ -300,8 +375,34 @@ public class EnemyLeaderController : MonoBehaviour
         return false;
     }
 
+    //最も近いオブジェクトを見つけるメソッド
+    public GameObject ClosestBaseCoreObject()
+    {
+        if (allBaseCoreDistances == null || allBaseCoreDistances.Count == 0)
+        {
+            // Debug.LogWarning("ClosestBaseCoreObject: 距離情報リストが空です。");
+            return null; // 要素がない場合は null を返す
+        }
 
-     //デバッグ表示
+        // 最初の要素を仮の最小値として設定
+        BaseCoreDistanceInfo firstInfo = allBaseCoreDistances[0];
+        // 2番目の要素から最後までループして比較
+        for (int i = 1; i < allBaseCoreDistances.Count; i++)
+        {
+            if (allBaseCoreDistances[i].distance < firstInfo.distance)
+            {
+                // より近いものが見つかったら更新
+                firstInfo = allBaseCoreDistances[i];
+            }
+        }
+
+        // Debug.Log(firstInfo.baseCoreObject);
+        return firstInfo.baseCoreObject;
+
+    }
+
+
+    //デバッグ表示
     void OnDrawGizmos()
     {
         if (navMeshAgent != null && navMeshAgent.hasPath)
