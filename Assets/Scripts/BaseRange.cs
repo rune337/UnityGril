@@ -32,7 +32,7 @@ public class BaseRange : MonoBehaviour
             }
 
             //敵侵入
-            else if (other.gameObject.tag == "Enemy")
+            else if (other.gameObject.tag.Contains("Enemy"))
             {
                 this.tag = "Enemy_Base";//拠点の陣営タグ変更
                 baseCore.tag = "Enemy_Base";//コアの陣営タグ変更

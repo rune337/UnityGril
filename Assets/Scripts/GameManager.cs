@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // SceneManagerを使用するために必要
-using System.Collections.Generic;   // Dictionaryを使用するために必要
+using System.Collections.Generic;
+using System.Linq; // LINQを使うために必要
 
 public enum GameState
 {
@@ -10,60 +10,57 @@ public enum GameState
     gameOver,
     gameClear,
 }
+
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    public string tagToSearch = "Base";
     public static GameState gameState;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    private List<GameObject> foundBaseObjects = new List<GameObject>();
+
     void Start()
     {
-        CountRootObjectTags();
-
+        RefreshBaseCoreList();
     }
 
-    // Update is called once per frame
     void Update()
     {
-
+        // ゲーム状態に応じた処理
     }
 
-
-    void CountRootObjectTags()
+    // タグから BaseCore を探してリスト化
+    void FindBaseObjects(string tag)
     {
-        // タグとその個数を格納する辞書
-        Dictionary<string, int> tagCounts = new Dictionary<string, int>();
+        foundBaseObjects.Clear();
 
-        // 現在のアクティブなシーンを取得
-        Scene currentScene = SceneManager.GetActiveScene();
+        // タグで検索
+        GameObject[] baseObjects = GameObject.FindGameObjectsWithTag(tag);
 
-        // シーンのRoot GameObjectをすべて取得
-        GameObject[] rootObjects = currentScene.GetRootGameObjects();
+        // 名前が "BaseCore" のものだけ追加
+        foundBaseObjects = baseObjects.Where(obj => obj != null && obj.name == "BaseCore").ToList();
 
-        Debug.Log("--- シーンのRootオブジェクトのタグをカウント ---");
+        Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+    }
 
-        // 各Rootオブジェクトのタグを調べてカウント
-        foreach (GameObject obj in rootObjects)
-        {
-            string objTag = obj.tag;
+    public void RefreshBaseCoreList()
+    {
+        FindBaseObjects(tagToSearch);
+    }
 
-            // Debug.Log($"オブジェクト名: {obj.name}, タグ: {objTag}"); // デバッグ用
-
-            // タグが既に辞書に存在すればカウントを増やし、存在しなければ新しく追加
-            if (tagCounts.ContainsKey(objTag))
-            {
-                tagCounts[objTag]++;
-            }
-            else
-            {
-                tagCounts.Add(objTag, 1);
-            }
-        }
-
-        // 結果をコンソールに表示
-        Debug.Log("--- タグごとのRootオブジェクトの個数 ---");
-        foreach (KeyValuePair<string, int> entry in tagCounts)
-        {
-            Debug.Log($"タグ: \"{entry.Key}\", 個数: {entry.Value}");
-        }
-        Debug.Log("------------------------------------");
+    public List<GameObject> GetFoundBaseObjects()
+    {
+        return foundBaseObjects;
     }
 }

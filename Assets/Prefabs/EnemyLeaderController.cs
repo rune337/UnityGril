@@ -5,15 +5,23 @@ using RPGCharacterAnims.Extensions;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem.LowLevel;
+using System.Linq; // LINQを使用するために必要
 
 public class EnemyLeaderController : MonoBehaviour
 {
     private NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
     GameObject player;
 
+    GameObject targetBaseCore;
+
     public float attackRange = 0.5f; //攻撃を開始する距離
     public float stopRange = 2f; //接近限界距離
+
+    public float baseDiscrimination = 10f; //Base判別範囲
+    public string targetTag = "Player_Base"; //Base判別範囲でターゲットとするベースコアのタグ
+
     public float detectionRange = 80f; //索敵範囲
+    public float detectionRangeBaseCore = 1000f; //ベースコア捜索範囲
     public Animator animator; //アニメーター
     public float enemySpeed = 5.0f;
 
@@ -25,6 +33,7 @@ public class EnemyLeaderController : MonoBehaviour
 
     float attackTimer; //攻撃可能になる時間
     float DistanceToPlayer; //プレイヤーとの距離
+    float DistanceToBaseCore; //ベースコアとの距離
 
 
     float lastAttackTime = 0f; //前回攻撃したときのTime.timeを記録しておく変数
@@ -45,63 +54,58 @@ public class EnemyLeaderController : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         animator = GetComponent<Animator>();
 
+        targetBaseCore = GameManager.Instance.GetFoundBaseObjects().FirstOrDefault(obj => obj != null && obj.name == "BaseCore");
+
+        if (targetBaseCore == null)
+        {
+            Debug.LogWarning("BaseCore がまだ登録されていません。StartCoroutineで待機します。");
+            StartCoroutine(WaitForBaseCore());
+        }
     }
+
+    IEnumerator WaitForBaseCore()
+    {
+        while (GameManager.Instance.GetFoundBaseObjects().Count == 0)
+        {
+            yield return null; // 次のフレームまで待つ
+        }
+
+        targetBaseCore = GameManager.Instance.GetFoundBaseObjects()
+            .FirstOrDefault(obj => obj != null && obj.name == "BaseCore");
+
+        Debug.Log("BaseCore を取得しました: " + targetBaseCore.name);
+    }
+
+
 
     // Update is called once per frame
     void Update()
     {
+        if (targetBaseCore == null)
+            return; // まだ BaseCore を取得していなければ何もしない
 
         //プレイヤーいなくなった時
         if (player == null)
         {
             return;
         }
-        
+
+        //プレイヤーとの距離
         DistanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+        //ベースコアとの距離
+        DistanceToBaseCore = Vector3.Distance(targetBaseCore.transform.position, transform.position);
+        // Debug.Log("DistanceToBaseCore: " + DistanceToBaseCore); // 距離をログ出力
 
         //索敵範囲の時
         if (DistanceToPlayer <= detectionRange)
         {
-            //これを書かないとプレイヤーと逆方向に走って行ってしまう
-            if (lockOn)
-            {
-                //プレイヤーの方を向く
-                transform.LookAt(player.transform.position);
-            }
-
-            //プレイヤーとの距離が接近限界以上の時
-            if (DistanceToPlayer >= stopRange)
-            {
-                navMeshAgent.SetDestination(player.transform.position);
-                animator.SetBool("isRun", true);
-            }
-
-            //プレイヤーとの距離が接近距離より小さい時
-            else if (DistanceToPlayer < stopRange)
-            {
-                navMeshAgent.isStopped = true;
-                animator.SetBool("isRun", false);
-
-                //攻撃中でないかつ前回の攻撃から0.5経過
-                if (!isAttack && Time.time >= attackTimer)
-                    AttackCombo();
-            }
+            MovePlayer();
         }
-        //ここに索敵範囲外の時は拠点は破壊に行く処理をかく
-        else
+
+        //ベースコアとの距離よりベースコアの索敵範囲が広い時
+        else if (DistanceToBaseCore <= detectionRangeBaseCore)
         {
-            navMeshAgent.isStopped = true;
-            if (navMeshAgent.hasPath)
-            {
-                navMeshAgent.ResetPath();
-            }
-
-            animator.SetBool("isRun", false);
-            animator.SetBool("isIdle", true);
-
-
-            //player索敵範囲外の時は拠点を取得しにいくもしくは攻撃しにいく
-
+            MoveBaseCore();
         }
 
     }
@@ -199,7 +203,106 @@ public class EnemyLeaderController : MonoBehaviour
     }
 
 
-    //デバッグ表示
+    void MovePlayer()
+    {
+        //これを書かないとプレイヤーと逆方向に走って行ってしまう
+        if (lockOn)
+        {
+            //プレイヤーの方を向く
+            transform.LookAt(player.transform.position);
+        }
+
+        //プレイヤーとの距離が接近限界以上の時
+        if (DistanceToPlayer >= stopRange)
+        {
+            navMeshAgent.SetDestination(player.transform.position);
+            animator.SetBool("isRun", true);
+        }
+
+        //プレイヤーとの距離が接近距離より小さい時
+        else if (DistanceToPlayer < stopRange)
+        {
+            navMeshAgent.isStopped = true;
+            animator.SetBool("isRun", false);
+
+            //攻撃中でないかつ前回の攻撃から0.5経過
+            if (!isAttack && Time.time >= attackTimer)
+                AttackCombo();
+        }
+    }
+
+
+    void MoveBaseCore()
+    {
+        //player索敵範囲外の時は拠点を取得しにいくもしくは攻撃しにいく
+        if (GameManager.Instance.GetFoundBaseObjects().Count > 0)
+        {
+
+            // NavMeshAgentが停止状態であれば解除する
+            if (navMeshAgent.isStopped)
+            {
+                navMeshAgent.isStopped = false;
+            }
+
+            if (lockOn)
+            {
+                //BaseCoreの方を向く (Y軸は固定して水平に回転)
+                Vector3 lookAtPosition = targetBaseCore.transform.position;
+                lookAtPosition.y = transform.position.y;
+                transform.LookAt(lookAtPosition);
+            }
+
+            if (DistanceToBaseCore > 2.7f)
+            {
+                navMeshAgent.isStopped = false;
+                navMeshAgent.SetDestination(targetBaseCore.transform.position);
+                animator.SetBool("isRun", true);
+            }
+
+            else if (DistanceToBaseCore <= 2.7f)
+            {
+                navMeshAgent.isStopped = true;
+                animator.SetBool("isRun", false);
+
+                // 範囲内にプレイヤーのベースコアがいるとき
+                if (CheckForSpecificTagInRadius())
+                {
+                    //攻撃中でないかつ前回の攻撃から0.5経過
+                    if (!isAttack && Time.time >= attackTimer)
+                        AttackCombo();
+                }
+
+            }
+        }
+    }
+
+    //範囲内に
+    bool CheckForSpecificTagInRadius()
+    {
+        // transform.positionを中心に、BaseDiscriminationの半径内でColliderを検出
+        // detectionLayer は、検出したいオブジェクトが属するレイヤーのみを指定することで、不要なオブジェクトの検出を避ける
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, baseDiscrimination);
+
+        //↑にした detectionLayer は、検出したいオブジェクトが属するレイヤーのみを指定することで、不要なオブジェクトの検出を避ける
+        // Collider[] hitColliders = Physics.OverlapSphere(transform.position, BaseDiscrimination, detectionLayer);
+
+        // 検出されたColliderの中に、targetTagを持つオブジェクトがあるかチェック
+        foreach (Collider hitCollider in hitColliders)
+        {
+            // Rootオブジェクトのタグをチェックするなら (other.transform.root.tag)
+            // 直接当たったオブジェクトのタグをチェックするなら (hitCollider.gameObject.tag)
+            if (hitCollider.gameObject.CompareTag(targetTag))
+            {
+                // 特定のタグを持つオブジェクトが見つかった
+                return true;
+            }
+        }
+        // 特定のタグを持つオブジェクトが一つも見つからなかった
+        return false;
+    }
+
+
+     //デバッグ表示
     void OnDrawGizmos()
     {
         if (navMeshAgent != null && navMeshAgent.hasPath)
@@ -221,5 +324,4 @@ public class EnemyLeaderController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopRange);
     }
-
 }

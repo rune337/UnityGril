@@ -9,7 +9,7 @@ public class Core : MonoBehaviour
     public float coreHP = 10; //coreHP
     string target;
 
-     // BaseControllerへの参照を追加
+     // BaseRangeへの参照を追加
     public BaseRange baseRange; 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,7 +26,7 @@ public class Core : MonoBehaviour
         {
             target = "Player";
         }
-        else if(this.tag == "Enemy_Base")
+        else if (this.tag == "Enemy_Base")
         {
             target = "Enemy";
         }
@@ -35,10 +35,10 @@ public class Core : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !SwordAttack.isAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
+        if (isInvincible) //無敵状態なら何もしない
             return;
 
-        Debug.Log(other.transform.root.tag);
+        // Debug.Log(other.transform.root.tag);
 
         //攻撃者のタグに自分のタグに含む文字と同じ文字が含まれていない時=陣営同じじゃない時
         //other.transform.parent.tagだと直近の親とってくるだけなので一番上の親とりたい時はrootにする
