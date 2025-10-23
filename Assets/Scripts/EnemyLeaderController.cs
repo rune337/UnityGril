@@ -276,7 +276,7 @@ public class EnemyLeaderController : MonoBehaviour
         }
     }
 
-    //範囲内に
+    //範囲内に対象タグを持つオブジェクトがいるかどうか
     bool CheckForSpecificTagInRadius()
     {
         // transform.positionを中心に、BaseDiscriminationの半径内でColliderを検出
