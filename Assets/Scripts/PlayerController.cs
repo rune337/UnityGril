@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer; // 接地判定で判定する地面のレイヤー
     private bool isGrounded; // 接地しているかどうかのフラグ
 
+    bool isJumping;
+
 
 
     //HP周り
@@ -64,7 +66,7 @@ public class PlayerController : MonoBehaviour
         }
 
         isGrounded = Physics.CheckSphere(groundCheck.position, 0.2f, groundLayer);
-        if (isGrounded && rb.linearVelocity.y <= 0.01f) //落下完了時
+        if (isGrounded && !isJumping) //落下完了時
         {
             animator.SetBool("isJump", false);
         }
@@ -74,10 +76,18 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             animator.SetBool("isJump", true);
+            isJumping = true; //ジャンプ中フラグをtrue
+            Invoke("OffJumping", 0.5f);
 
         }
 
 
+    }
+
+    //時間差でジャンプフラグを自然解除 ※後でこルーチンでもできるか試す
+    void OffJumping()
+    {
+        isJumping = false;
     }
 
     void FixedUpdate()

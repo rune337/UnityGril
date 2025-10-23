@@ -3,11 +3,22 @@ using UnityEngine;
 public class BaseRange : MonoBehaviour
 {
     public GameObject baseCore;
+    public static Color enemyColor = Color.red; //敵陣営のコアの色
+    public static Color playerColor = Color.blue; //味方陣営のコアの色
+
+    //ChangeColorクラスのメソッドを使用するために、呼び出し側のクラスで実体をインスタンスとして作る→これをしてもUnityはMonobehaviorでクラス継承していてGameobjectにスクリプトをアタッチすることでインスタンスを生成するので、
+    //  自分でインスタンスにしても何もゲームオブジェクトがアタッチされておらず空になり何もできない
+    // ChangeColor changeColor = new ChangeColor();
+
+    private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
+
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        baseCoreChangeColor = baseCore.GetComponent<ChangeColor>();
     }
 
     // Update is called once per frame
@@ -29,6 +40,9 @@ public class BaseRange : MonoBehaviour
                 this.tag = "Player_Base"; //拠点の陣営タグ変更
                 baseCore.tag = "Player_Base"; //コアの陣営タグ変更
 
+                // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+                baseCoreChangeColor.SetColor(playerColor);
+
             }
 
             //敵侵入
@@ -36,12 +50,15 @@ public class BaseRange : MonoBehaviour
             {
                 this.tag = "Enemy_Base";//拠点の陣営タグ変更
                 baseCore.tag = "Enemy_Base";//コアの陣営タグ変更
+
+                // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+                baseCoreChangeColor.SetColor(enemyColor);
             }
 
         }
 
     }
-    
+
     //タグを変える用のメソッド
     public void ChangeCoreTag()
     {
@@ -50,6 +67,8 @@ public class BaseRange : MonoBehaviour
         {
             this.tag = "Player_Base";
             baseCore.tag = "Player_Base";
+            // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+            baseCoreChangeColor.SetColor(playerColor);
         }
 
         //プレイヤーから敵にする
@@ -57,7 +76,10 @@ public class BaseRange : MonoBehaviour
         {
             this.tag = "Enemy_Base";
             baseCore.tag = "Enemy_Base";
+            // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+            baseCoreChangeColor.SetColor(enemyColor);
 
         }
     }
+
 }

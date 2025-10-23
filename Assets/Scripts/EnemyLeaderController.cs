@@ -11,7 +11,6 @@ public class EnemyLeaderController : MonoBehaviour
 {
     private NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
     GameObject player;
-
     GameObject targetBaseCore;
 
     public float attackRange = 0.5f; //攻撃を開始する距離
@@ -319,9 +318,17 @@ public class EnemyLeaderController : MonoBehaviour
         }
 
         // 索敵範囲と停止範囲も描画すると分かりやすい
+
+        //プレイヤー索敵範囲
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        //停止範囲
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopRange);
+
+        //BaseCore索敵範囲
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRangeBaseCore);
     }
 }
