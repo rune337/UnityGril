@@ -8,9 +8,9 @@ public class SwordAttack : MonoBehaviour
     float clickCount = 0; //クリック回数(プレイヤーの攻撃回数)
     float lastClickTime = 0f; //前回クリックしたときの Time.time を記録しておく変数
     float clickMaxDelay = 1.0f; //クリックの猶予時間
-    static public bool isAttack = false; //攻撃中フラグ
+    public bool playerIsAttack = false; //攻撃中フラグ
 
-     Animator animator;
+    Animator animator;
     Rigidbody rb;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,19 +20,17 @@ public class SwordAttack : MonoBehaviour
         animator = GetComponent<Animator>();
         
     }
-
     // Update is called once per frame
     void Update()
     {
         //攻撃のアニメーション
         if (Input.GetMouseButtonDown(0) || Input.GetKey(KeyCode.P))
         {
-            isAttack = true;
+            playerIsAttack = true;
             AttackCombo();
             // Debug.Log(clickCount);
             Invoke("AttackEnd", 0.5f);
         }
-
     }
 
     void AttackCombo()
@@ -56,6 +54,6 @@ public class SwordAttack : MonoBehaviour
     {
         //攻撃アニメーション終了時の処理
         animator.SetFloat("Attack", 0f);
-        isAttack = false;
+        playerIsAttack = false;
     }
 }

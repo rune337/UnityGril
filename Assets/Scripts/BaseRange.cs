@@ -11,12 +11,15 @@ public class BaseRange : MonoBehaviour
     // ChangeColor changeColor = new ChangeColor();
 
     private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
+    private BaseCore baseCoreDamageTag;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         baseCoreChangeColor = baseCore.GetComponent<ChangeColor>();
+        baseCoreDamageTag = baseCore.GetComponent<BaseCore>();
     }
 
     // Update is called once per frame
@@ -69,6 +72,7 @@ public class BaseRange : MonoBehaviour
             baseCore.tag = "Player_Ba";
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(playerColor);
+            baseCoreDamageTag.DamageTag();
         }
 
         //プレイヤーから敵にする
@@ -78,6 +82,7 @@ public class BaseRange : MonoBehaviour
             baseCore.tag = "Enemy_Ba";
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(enemyColor);
+            baseCoreDamageTag.DamageTag();
 
         }
     }

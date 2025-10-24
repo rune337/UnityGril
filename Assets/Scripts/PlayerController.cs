@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     bool isJumping;
 
+    public EnemyLeaderController enemyLeaderController; //スクリプト参照用のオブジェクト
+
 
 
     //HP周り
@@ -131,7 +133,7 @@ public class PlayerController : MonoBehaviour
     //ダメージ処理
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !EnemyLeaderController.isAttack) //無敵状態または敵が攻撃中でなければ何もしない
+        if (isInvincible || !enemyLeaderController.enemyLeaderIsAttack) //無敵状態または敵が攻撃中でなければ何もしない
             return;
 
 

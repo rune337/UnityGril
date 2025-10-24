@@ -6,11 +6,11 @@ public class EnemyController : MonoBehaviour
     bool isInvincible = false; // 無敵状態を表すフラグ
     int enemyHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
+    public SwordAttack swordAttack;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -20,7 +20,7 @@ public class EnemyController : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !SwordAttack.isAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
+        if (isInvincible || !swordAttack.playerIsAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
             return;
 
 
@@ -28,7 +28,7 @@ public class EnemyController : MonoBehaviour
         {
             isInvincible = true; //ダメージを受けたら無敵
             enemyHP--;
-            Debug.Log("敵のHP " + enemyHP);
+            // Debug.Log("敵のHP " + enemyHP);
 
             //無敵時間を開始するコルーチンを呼び出す
             StartCoroutine(SetInvincibilityTimer());

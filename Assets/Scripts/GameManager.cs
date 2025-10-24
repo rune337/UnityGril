@@ -63,17 +63,17 @@ public class GameManager : MonoBehaviour
         foundBaseObjects = baseObjects.Where(obj => obj != null && obj.name.Contains("BaseCore", StringComparison.OrdinalIgnoreCase)).ToList();
 
 
-        // Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
-        if (baseObjects.Length > 0)
-        {
-            foreach (GameObject obj in baseObjects)
-            {
-                if (obj != null)
-                {
-                    Debug.Log($"- {obj.name} (Tag: {obj.tag}, Instance ID: {obj.GetInstanceID()})");
-                }
-            }
-        }
+        //  Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+        //   if (foundBaseObjects.Count> 0)
+        //   {
+        //       foreach (GameObject obj in foundBaseObjects)
+        //       {
+        //           if (obj != null)
+        //           {
+        //               Debug.Log($"- {obj.name} (Tag: {obj.tag}, Instance ID: {obj.GetInstanceID()})");
+        //           }
+        //       }
+        //   }
     }
 
     // public void RefreshBaseCoreList()
