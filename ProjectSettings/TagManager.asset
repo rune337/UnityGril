@@ -10,6 +10,8 @@ TagManager:
   - Base
   - Player_Ba
   - Enemy_Ba
+  - EnemySword
+  - PlayerSword
   layers:
   - Default
   - TransparentFX
