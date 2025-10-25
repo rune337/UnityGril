@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour
         if (isInvincible || !enemyLeaderController.enemyLeaderIsAttack) //無敵状態または敵が攻撃中でなければ何もしない
             return;
 
-        if (other.gameObject.CompareTag("Sward"))
+        if (other.gameObject.CompareTag("EnemySword"))
         {
             isInvincible = true; //ダメージを受けたら無敵
             enemyHP--;

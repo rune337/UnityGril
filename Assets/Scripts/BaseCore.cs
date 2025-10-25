@@ -37,7 +37,7 @@ public class BaseCore : MonoBehaviour
         {
 
             //剣に当たった時ダメージ処理
-            if (other.gameObject.CompareTag("Sward"))
+            if (other.gameObject.CompareTag("EnemySword") || other.gameObject.CompareTag("PlayerSword"))
             {
                 isInvincible = true; //ダメージを受けたら無敵
                 coreHP--;

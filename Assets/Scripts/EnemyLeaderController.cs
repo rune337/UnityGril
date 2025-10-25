@@ -312,7 +312,7 @@ public class EnemyLeaderController : MonoBehaviour
             return;
 
 
-        if (other.gameObject.CompareTag("Sward"))
+        if (other.gameObject.CompareTag("PlayerSword"))
         {
             isInvincible = true; //ダメージを受けたら無敵
             enemyHP--;
