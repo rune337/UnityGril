@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     public float Speed, RunSpeed;
     float x, z;
-    Vector3 moving, diff, Player_pos;
+    Vector3 moving; // diff, Player_pos は不要になります
     Rigidbody rb;
     Animator animator;
     public float jumpPower = 10.0f;
@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 
     public EnemyLeaderController enemyLeaderController; //スクリプト参照用のオブジェクト
 
-
+    public Transform cameraTransform; // ここにメインカメラのTransformを設定します
 
     //HP周り
     bool isInvincible = false; // 無敵状態を表すフラグ
@@ -31,7 +31,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        Player_pos = GetComponent<Transform>().position;
+
+        // cameraTransformが設定されていない場合は、メインカメラを自動で取得
+        if (cameraTransform == null)
+        {
+            cameraTransform = Camera.main.transform;
+        }
     }
 
     // Update is called once per frame
@@ -40,28 +45,40 @@ public class PlayerController : MonoBehaviour
         x = Input.GetAxis("Horizontal");
         z = Input.GetAxis("Vertical");
 
-        diff = new Vector3(transform.position.x, transform.position.y, transform.position.z) - new Vector3(Player_pos.x, transform.position.y, Player_pos.z);
+        // 入力に基づいて移動方向を計算
+        Vector3 inputDirection = new Vector3(x, 0, z);
 
-        Player_pos = transform.position;
+        // カメラのTransformを基準に移動方向を変換
+        // カメラのY軸回転のみを考慮して、XZ平面での移動を計算します
+        Vector3 forward = cameraTransform.forward;
+        forward.y = 0; // Y成分を0にして、水平方向のベクトルにする
+        forward.Normalize(); // 正規化
 
-        if (diff.magnitude > 0.001f)
+        Vector3 right = cameraTransform.right;
+        right.y = 0; // Y成分を0にして、水平方向のベクトルにする
+        right.Normalize(); // 正規化
+
+        // カメラの向きに合わせて移動ベクトルを計算
+        moving = (forward * inputDirection.z + right * inputDirection.x).normalized * Speed;
+
+        // プレイヤーの向きを移動方向に向ける
+        if (moving.magnitude > 0.01f) // わずかな移動でも向きを変えるように調整
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(diff), 0.2f);
+            // Y軸の回転のみを更新し、傾きをなくす
+            Quaternion targetRotation = Quaternion.LookRotation(moving);
+            targetRotation.x = 0; // X軸の回転をリセット
+            targetRotation.z = 0; // Z軸の回転をリセット
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 0.2f);
         }
-
-        moving = new Vector3(x, 0, z);
-        moving = moving.normalized * Speed;
 
         //アニメーション設定
         animator.SetBool("isWalk", x != 0 || z != 0);
 
         if (Input.GetKey(KeyCode.LeftShift) && (x != 0 || z != 0))
         {
-            moving = moving.normalized * RunSpeed;
-
+            moving = (forward * inputDirection.z + right * inputDirection.x).normalized * RunSpeed;
             animator.SetBool("isRun", true);
         }
-
         else if (Input.GetKeyUp(KeyCode.LeftShift) || (x == 0 && z == 0))
         {
             animator.SetBool("isRun", false);
@@ -73,17 +90,13 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isJump", false);
         }
 
-
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             animator.SetBool("isJump", true);
             isJumping = true; //ジャンプ中フラグをtrue
             Invoke("OffJumping", 0.5f);
-
         }
-
-
     }
 
     //時間差でジャンプフラグを自然解除 ※後でこルーチンでもできるか試す
@@ -95,27 +108,15 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 velocity = rb.linearVelocity;
+        // movingのY成分は0なので、既存のy速度を維持
         Vector3 moveVelocity = new Vector3(moving.x, velocity.y, moving.z);
         rb.linearVelocity = moveVelocity;
-        //x, z は移動入力から更新
-        //y は物理エンジン（重力・ジャンプ）任せ
-        //つまり、Y軸方向の力（ジャンプ・落下）を維持したまま移動できる。
-        //結果：空中でも自然にジャンプ・落下が動作する
-
-
-        // rb.linearVelocity = moving;
-        //この書き方だと、毎フレーム Y軸（上方向）も上書きされる
-        //ジャンプで rb.AddForce(Vector3.up * jumpPower) を与えても、
-        //次の FixedUpdate() で rb.velocity が moving に置き換えられ、上方向の速度（y成分）が消える！
-        //結果：プレイヤーは一瞬だけ浮くけど、すぐ落ちる or ほぼジャンプしない。
     }
-
 
     void FootR()
     {
         //本当はここに足音入れる
     }
-
 
     void FootL()
     {
@@ -128,14 +129,11 @@ public class PlayerController : MonoBehaviour
         // Debug.Log("攻撃ヒット");
     }
 
-
-
     //ダメージ処理
     void OnTriggerEnter(Collider other)
     {
         if (isInvincible || !enemyLeaderController.enemyLeaderIsAttack) //無敵状態または敵が攻撃中でなければ何もしない
             return;
-
 
         if (other.gameObject.CompareTag("Sward"))
         {
@@ -145,7 +143,6 @@ public class PlayerController : MonoBehaviour
 
             //無敵時間を開始するコルーチンを呼び出す
             StartCoroutine(SetInvincibilityTimer());
-
         }
 
         if (enemyHP < 1)
@@ -153,19 +150,14 @@ public class PlayerController : MonoBehaviour
             Destroy(this.gameObject);
             GameManager.gameState = GameState.gameClear;
         }
-
-
     }
 
-
-
-     IEnumerator SetInvincibilityTimer()
+    IEnumerator SetInvincibilityTimer()
     {
         //指定された時間だけ待機
         yield return new WaitForSeconds(invincibilityDuration);
 
         //時間が経過したら無敵状態を解除
         isInvincible = false;
-
     }
 }
