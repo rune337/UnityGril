@@ -16,7 +16,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    private void Awake()
+
+
+    public string tagToSearch = "Base";
+    public string playerTagToSearch = "Player_Ba";
+    public static GameState gameState;
+
+    private List<GameObject> foundBaseObjects = new List<GameObject>();
+    private List<GameObject> foundPlayerBaseObjects = new List<GameObject>();
+
+    public event Action<List<GameObject>> OnBaseCoreUpdated;
+    public event Action<List<GameObject>> OnPlayerBaseCoreUpdated;
+
+     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -26,29 +38,18 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         FindBaseObjects(tagToSearch);
+        FindPlayerBaseObjects(playerTagToSearch);
     }
-
-    public string tagToSearch = "Base";
-    public static GameState gameState;
-
-    private List<GameObject> foundBaseObjects = new List<GameObject>();
-
-    public event Action<List<GameObject>> OnBaseCoreUpdated;
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-    }
-
 
     public void RefreshBaseCoreOnce()
     {
         FindBaseObjects(tagToSearch);
         OnBaseCoreUpdated?.Invoke(foundBaseObjects);
+    }
+
+    void Update()
+    {
+        FindPlayerBaseObjects(playerTagToSearch);
     }
 
     // タグから BaseCore を探してリスト化
@@ -76,6 +77,31 @@ public class GameManager : MonoBehaviour
         //   }
     }
 
+    //タグからPlayer_Baを探してリスト化
+     void FindPlayerBaseObjects(string tag)
+    {
+        foundPlayerBaseObjects.Clear();
+
+        // タグで検索
+        GameObject[] PlayerBaseObjects = GameObject.FindGameObjectsWithTag(tag);
+
+        // 名前に "player_Ba" を含むものをリストに追加
+        foundPlayerBaseObjects = PlayerBaseObjects.Where(obj => obj != null && obj.name.Contains("BaseCore", StringComparison.OrdinalIgnoreCase)).ToList();
+
+
+        //  Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+           if (foundPlayerBaseObjects.Count> 0)
+           {
+               foreach (GameObject obj in foundPlayerBaseObjects)
+               {
+                   if (obj != null)
+                   {
+                       Debug.Log($"- {obj.name} (Tag: {obj.tag}, Instance ID: {obj.GetInstanceID()})");
+                   }
+               }
+           }
+    }
+
     // public void RefreshBaseCoreList()
     // {
     //     FindBaseObjects(tagToSearch);
@@ -86,5 +112,11 @@ public class GameManager : MonoBehaviour
     public List<GameObject> GetFoundBaseObjects()
     {
         return foundBaseObjects;
+    }
+
+
+    public List<GameObject> PlayerGetFoundBaseObjects()
+    {
+        return foundPlayerBaseObjects;
     }
 }
