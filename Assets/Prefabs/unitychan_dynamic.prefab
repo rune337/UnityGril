@@ -8052,6 +8052,7 @@ MonoBehaviour:
   enemyLeaderController: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
   enemyController: {fileID: -6146381792416250014, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
   cameraTransform: {fileID: 8453442490660160593, guid: b6794ff72935a4b1e91432ace5aae73e, type: 3}
+  isInvincible: 0
   invincibilityDuration: 0.5
 --- !u!54 &302188276189678008
 Rigidbody:
@@ -8116,6 +8117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIsAttack: 0
+  swordCollider: {fileID: 3967395382462489474}
 --- !u!1 &8512451528836919558
 GameObject:
   m_ObjectHideFlags: 0
@@ -8886,6 +8888,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
+--- !u!114 &3967395382462489474 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6137466600657297725, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
+  m_PrefabInstance: {fileID: 7071685297589912255}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 406bae42c473a45ba9bdad942292c242, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6272012569048219640 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3830600091909258567, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}

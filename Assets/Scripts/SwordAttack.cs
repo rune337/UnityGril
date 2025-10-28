@@ -9,6 +9,7 @@ public class SwordAttack : MonoBehaviour
     float lastClickTime = 0f; //前回クリックしたときの Time.time を記録しておく変数
     float clickMaxDelay = 1.0f; //クリックの猶予時間
     public bool playerIsAttack = false; //攻撃中フラグ
+    public SwordCollider swordCollider;
 
     Animator animator;
     Rigidbody rb;
@@ -18,6 +19,7 @@ public class SwordAttack : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        swordCollider = GetComponentInChildren<SwordCollider>(); //インスペクターでアタッチしてもnullになるので自動取得
         
     }
     // Update is called once per frame
@@ -48,6 +50,7 @@ public class SwordAttack : MonoBehaviour
         }
         lastClickTime = Time.time;
         animator.SetFloat("Attack", clickCount);
+        swordCollider.EnableSwordCollider(); //剣のコライダーを有効にするのを呼び出す
     }
 
     void AttackEnd()
@@ -55,5 +58,6 @@ public class SwordAttack : MonoBehaviour
         //攻撃アニメーション終了時の処理
         animator.SetFloat("Attack", 0f);
         playerIsAttack = false;
+        swordCollider.DisableSwordCollider(); //剣のコライダーを無効にするのを呼び出す
     }
 }

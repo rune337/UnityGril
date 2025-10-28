@@ -50,7 +50,7 @@ public class EnemyController : MonoBehaviour
     int enemyHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public SwordCollider swordCollider; //剣をアタッチ、剣にアタッチしている剣のコライダーを有効にするスクリプトを参照するため
 
     //ベースコアとの距離とオブジェクトを紐づけるクラスを宣言
     public class BaseCoreDistanceInfo
@@ -109,6 +109,7 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
 
         baseCoreList = GameManager.Instance.GetFoundBaseObjects(); //スタート時にリストにリストを入れる
+        swordCollider = GetComponentInChildren<SwordCollider>(); //インスペクターでアタッチしてもnullになることあるので自動取得
 
         if (baseCoreList == null || baseCoreList.Count == 0)
         {
@@ -273,12 +274,13 @@ public class EnemyController : MonoBehaviour
             }
         }
         animator.SetFloat("EnemyAttack", attackCount);
+        swordCollider.EnableSwordCollider(); //剣のコライダーを有効にするのを呼び出す
 
         //攻撃インターバル
         attackTimer = Time.time + attackInterval;
         lastAttackTime = Time.time; //攻撃が終わった時間を記録
 
-        Invoke("AttackEnd", 5.0f);
+        Invoke("AttackEnd", 0.5f);
       
     }
 
@@ -289,7 +291,8 @@ public class EnemyController : MonoBehaviour
         //攻撃アニメーション終了時の処理
         animator.SetFloat("EnemyAttack", 0f);
         enemyIsAttack = false;
-        Debug.Log("After Invoke" + enemyIsAttack);
+        // Debug.Log("After Invoke" + enemyIsAttack);
+        swordCollider.DisableSwordCollider(); //剣のコライダーを無効にするのを呼び出す
     }
 
 
@@ -319,15 +322,6 @@ public class EnemyController : MonoBehaviour
             return;
 
         }
-        
-           // どちらか一方の敵でも攻撃中かどうかをチェック
-        if (!swordAttack.playerIsAttack && !allyController.allyIsAttack) // どちらの敵も攻撃中でない場合
-        {
-            //  Debug.Log("ここ");
-            // Debug.Log("Neither leader nor normal enemy is attacking. Returning.");
-            return;
-        }
-
 
         if (other.gameObject.CompareTag("PlayerSword"))
         {
@@ -381,7 +375,7 @@ public class EnemyController : MonoBehaviour
 
             //攻撃中でないかつ前回の攻撃から0.5経過
             if (!enemyIsAttack && Time.time >= attackTimer)
-                AttackCombo();
+                 AttackCombo();
             
         }
     }

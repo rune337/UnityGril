@@ -3234,6 +3234,7 @@ MonoBehaviour:
   baseCoreList: []
   PlayerBaseCoreList: []
   swordAttack: {fileID: 3346889663078933395, guid: f6479a391f2114375a97d57ab334b068, type: 3}
+  swordCollider: {fileID: 5460657558678849702}
   invincibilityDuration: 0.5
 --- !u!1 &2711926024762958715
 GameObject:
@@ -8917,3 +8918,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3830600091909258567, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
   m_PrefabInstance: {fileID: 2226060543370357147}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5460657558678849702 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6137466600657297725, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
+  m_PrefabInstance: {fileID: 2226060543370357147}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 406bae42c473a45ba9bdad942292c242, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -139,18 +139,6 @@ public class PlayerController : MonoBehaviour
             return;
 
         }
-        
-      
-
-           // どちらか一方の敵でも攻撃中かどうかをチェック
-        if (!enemyLeaderController.enemyLeaderIsAttack && !enemyController.enemyIsAttack) // どちらの敵も攻撃中でない場合
-        {
-              Debug.Log($"LeaderAttack={enemyLeaderController.enemyLeaderIsAttack}, EnemyAttack={enemyController.enemyIsAttack}");
-            //  Debug.Log("ここ");
-            // Debug.Log("Neither leader nor normal enemy is attacking. Returning.");
-            return;
-        }
-
 
         if (other.gameObject.CompareTag("EnemySword"))
         {

@@ -21,7 +21,7 @@ public class BaseCore : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        DamageTag();
     }
 
     void OnTriggerEnter(Collider other)
@@ -42,6 +42,7 @@ public class BaseCore : MonoBehaviour
                 isInvincible = true; //ダメージを受けたら無敵
                 coreHP--;
                 Debug.Log("コアのHP " + coreHP);
+                Debug.Log(target);
 
                 if (coreHP <= 0)
                 {

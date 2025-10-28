@@ -44,7 +44,7 @@ public class EnemyLeaderController : MonoBehaviour
 
 
     public SwordAttack swordAttack; //スクリプト参照用のスクリプトのついているオブジェクトをアタッチする変数
-
+    public SwordCollider swordCollider; //剣をアタッチ
     //HP周り
     int enemyHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
@@ -108,6 +108,8 @@ public class EnemyLeaderController : MonoBehaviour
         animator = GetComponent<Animator>();
 
         baseCoreList = GameManager.Instance.GetFoundBaseObjects(); //スタート時にリストにリストを入れる
+        swordCollider = GetComponentInChildren<SwordCollider>(); //インスペクターでアタッチしてもnullになることあるので自動取得
+
 
         if (baseCoreList == null || baseCoreList.Count == 0)
         {
@@ -229,7 +231,7 @@ public class EnemyLeaderController : MonoBehaviour
                 MovePlayerBaseCore(playerClosestObject);
             }
 
-            
+
         }
 
         if (DistanceToPlayer <= detectionRange)
@@ -270,6 +272,7 @@ public class EnemyLeaderController : MonoBehaviour
             }
         }
         animator.SetFloat("EnemyLeaderAttack", attackCount);
+        swordCollider.EnableSwordCollider(); //剣のコライダーを有効にするのを呼び出す
 
         //攻撃インターバル
         attackTimer = Time.time + attackInterval;
@@ -285,6 +288,7 @@ public class EnemyLeaderController : MonoBehaviour
         //攻撃アニメーション終了時の処理
         animator.SetFloat("EnemyLeaderAttack", 0f);
         enemyLeaderIsAttack = false;
+        swordCollider.DisableSwordCollider(); //剣のコライダーを無効にするのを呼び出す
     }
 
 
@@ -308,7 +312,7 @@ public class EnemyLeaderController : MonoBehaviour
     //ダメージ処理
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !swordAttack.playerIsAttack) //無敵状態またはプレイヤーが攻撃中でなければ何もしない
+        if (isInvincible) //無敵状態
             return;
 
 
@@ -344,11 +348,11 @@ public class EnemyLeaderController : MonoBehaviour
     void MovePlayer()
     {
         //これを書かないとプレイヤーと逆方向に走って行ってしまう //壁にぶつかることあるのでコメントアウト
-         if (lockOn)
-          {
-              //プレイヤーの方を向く
-              transform.LookAt(player.transform.position);
-          }
+        if (lockOn)
+        {
+            //プレイヤーの方を向く
+            transform.LookAt(player.transform.position);
+        }
 
         //プレイヤーとの距離が接近限界以上の時
         if (DistanceToPlayer >= stopRange)
@@ -365,7 +369,7 @@ public class EnemyLeaderController : MonoBehaviour
 
             //攻撃中でないかつ前回の攻撃から0.5経過
             if (!enemyLeaderIsAttack && Time.time >= attackTimer)
-                AttackCombo();
+                 AttackCombo();
         }
     }
 
@@ -451,7 +455,7 @@ public class EnemyLeaderController : MonoBehaviour
 
             if (PlayerDistanceToClosestObject > 7.6f)
             {
-                Debug.Log(PlayerDistanceToClosestObject);
+                // Debug.Log(PlayerDistanceToClosestObject);
                 navMeshAgent.isStopped = false;
                 navMeshAgent.SetDestination(playerClosestObject.transform.position);
                 animator.SetBool("isRun", true);

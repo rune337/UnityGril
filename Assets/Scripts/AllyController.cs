@@ -29,6 +29,7 @@ public class AllyController : MonoBehaviour
     bool lockOn = true; //ターゲット //壁にぶつかるのでコメントアウト
 
     float DistanceToEnemy; //敵との距離
+    float DistanceToEnemyLeader; //敵リーダとの距離
     float distanceToClosestObject; //一番近いベースコアとの距離
     float EnemyDistanceToClosestObject; //一番近いベースコアとの距離
 
@@ -50,6 +51,8 @@ public class AllyController : MonoBehaviour
     //HP周り
     int allyHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
+
+    public SwordCollider swordCollider; //剣をアタッチ、剣にアタッチしている剣のコライダーを有効にするスクリプトを参照するため
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -111,6 +114,8 @@ public class AllyController : MonoBehaviour
         animator = GetComponent<Animator>();
 
         baseCoreList = GameManager.Instance.GetFoundBaseObjects(); //スタート時にリストにリストを入れる
+        swordCollider = GetComponentInChildren<SwordCollider>(); //インスペクターでアタッチしてもnullになることあるので自動取得
+
 
         if (baseCoreList == null || baseCoreList.Count == 0)
         {
@@ -189,14 +194,15 @@ public class AllyController : MonoBehaviour
         if (baseCoreList == null)
             return; // まだ BaseCore を取得していなければ何もしない
 
-        //プレイヤーいなくなった時
-        if (enemy == null)
+        //敵がいなくなった時
+        if (enemy == null || enemyLeader == null)
         {
             return;
         }
 
         //敵との距離
         DistanceToEnemy = Vector3.Distance(enemy.transform.position, transform.position);
+        DistanceToEnemyLeader = Vector3.Distance(enemyLeader.transform.position, transform.position);
 
 
         // Debug.Log(ClosestBaseCoreObject()); //一番近いベースコアオブジェクト
@@ -232,12 +238,12 @@ public class AllyController : MonoBehaviour
                 MovePlayerBaseCore(enemyClosestObject);
             }
 
-            
+
         }
 
-        if (DistanceToEnemy <= detectionRange)
+        if (DistanceToEnemyLeader <= detectionRange)
         {
-            MovePlayer();
+            MoveEnemy();
         }
 
         // ★デバッグログを追加
@@ -273,6 +279,7 @@ public class AllyController : MonoBehaviour
             }
         }
         animator.SetFloat("AllyAttack", attackCount);
+        swordCollider.EnableSwordCollider(); //剣のコライダーを有効にするのを呼び出す
 
         //攻撃インターバル
         attackTimer = Time.time + attackInterval;
@@ -288,6 +295,7 @@ public class AllyController : MonoBehaviour
         //攻撃アニメーション終了時の処理
         animator.SetFloat("AllyAttack", 0f);
         allyIsAttack = false;
+        swordCollider.DisableSwordCollider(); //剣のコライダーを無効にするのを呼び出す
     }
 
 
@@ -317,15 +325,6 @@ public class AllyController : MonoBehaviour
             return;
 
         }
-        
-           // どちらか一方の敵でも攻撃中かどうかをチェック
-        if (!enemyLeaderController.enemyLeaderIsAttack && !enemyController.enemyIsAttack) // どちらの敵も攻撃中でない場合
-        {
-             Debug.Log("ここ");
-            // Debug.Log("Neither leader nor normal enemy is attacking. Returning.");
-            return;
-        }
-
 
         if (other.gameObject.CompareTag("EnemySword"))
         {
@@ -355,25 +354,27 @@ public class AllyController : MonoBehaviour
     }
 
 
-    void MovePlayer()
+    void MoveEnemy()
     {
         //これを書かないとプレイヤーと逆方向に走って行ってしまう //壁にぶつかることあるのでコメントアウト
-         if (lockOn)
-          {
-              //プレイヤーの方を向く
-              transform.LookAt(enemy.transform.position);
-          }
+        if (lockOn)
+        {
+            //プレイヤーの方を向く
+            transform.LookAt(enemyLeader.transform.position);
+        }
 
         //敵との距離が接近限界以上の時
-        if (DistanceToEnemy >= stopRange)
+        if (DistanceToEnemyLeader >= stopRange)
         {
-            navMeshAgent.SetDestination(enemy.transform.position);
+            navMeshAgent.SetDestination(enemyLeader.transform.position);
             animator.SetBool("isRun", true);
+            Debug.Log("Run");
         }
 
         //敵との距離が接近距離より小さい時
-        else if (DistanceToEnemy < stopRange)
+        else if (DistanceToEnemyLeader < stopRange)
         {
+            Debug.Log("attack");
             navMeshAgent.isStopped = true;
             animator.SetBool("isRun", false);
 
