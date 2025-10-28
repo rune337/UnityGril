@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI; // NavMesh関連を使うために必要
 
 public class BaseRange : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class BaseRange : MonoBehaviour
 
     private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
     private BaseCore baseCoreDamageTag;
+    public GameObject allyPrefabs;
+     public GameObject enemyPrefabs;
+
+    public GameObject SpawnPoint; // 敵生成位置
 
 
 
@@ -44,6 +49,12 @@ public class BaseRange : MonoBehaviour
                 // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
                 baseCoreChangeColor.SetColor(playerColor);
                 GameManager.Instance.RefreshBaseCoreOnce();
+
+                GameObject obj = Instantiate(
+                    allyPrefabs,
+                    SpawnPoint.transform.position,
+                    Quaternion.identity
+                    ); //味方を生成
             }
 
             //敵侵入
@@ -55,8 +66,15 @@ public class BaseRange : MonoBehaviour
                 // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
                 baseCoreChangeColor.SetColor(enemyColor);
                 GameManager.Instance.RefreshBaseCoreOnce();
+
+
+                    GameObject obj = Instantiate(
+                    enemyPrefabs,
+                    SpawnPoint.transform.position,
+                    Quaternion.identity
+                    ); //敵を生成
             }
-             GameManager.Instance.RefreshBaseCoreOnce();
+            GameManager.Instance.RefreshBaseCoreOnce();
 
         }
 

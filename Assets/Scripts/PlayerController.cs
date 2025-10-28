@@ -18,12 +18,13 @@ public class PlayerController : MonoBehaviour
     bool isJumping;
 
     public EnemyLeaderController enemyLeaderController; //スクリプト参照用のオブジェクト
+    public EnemyController enemyController; //スクリプト参照用のオブジェクト
 
     public Transform cameraTransform; // ここにメインカメラのTransformを設定します
 
     //HP周り
-    bool isInvincible = false; // 無敵状態を表すフラグ
-    int enemyHP = 10;
+    public bool isInvincible = false; // 無敵状態を表すフラグ
+    public static int playerHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
 
     // Start is called before the first frame update
@@ -132,23 +133,39 @@ public class PlayerController : MonoBehaviour
     //ダメージ処理
     void OnTriggerEnter(Collider other)
     {
-        if (isInvincible || !enemyLeaderController.enemyLeaderIsAttack) //無敵状態または敵が攻撃中でなければ何もしない
+        if (isInvincible) //無敵状態
+        {
+
             return;
+
+        }
+        
+      
+
+           // どちらか一方の敵でも攻撃中かどうかをチェック
+        if (!enemyLeaderController.enemyLeaderIsAttack && !enemyController.enemyIsAttack) // どちらの敵も攻撃中でない場合
+        {
+              Debug.Log($"LeaderAttack={enemyLeaderController.enemyLeaderIsAttack}, EnemyAttack={enemyController.enemyIsAttack}");
+            //  Debug.Log("ここ");
+            // Debug.Log("Neither leader nor normal enemy is attacking. Returning.");
+            return;
+        }
+
 
         if (other.gameObject.CompareTag("EnemySword"))
         {
             isInvincible = true; //ダメージを受けたら無敵
-            enemyHP--;
-            Debug.Log("味方のHP " + enemyHP);
+            playerHP--;
+            Debug.Log("味方のHP " + playerHP);
 
             //無敵時間を開始するコルーチンを呼び出す
             StartCoroutine(SetInvincibilityTimer());
         }
 
-        if (enemyHP < 1)
+        if (playerHP < 1)
         {
             Destroy(this.gameObject);
-            GameManager.gameState = GameState.gameClear;
+            GameManager.gameState = GameState.gameOver;
         }
     }
 

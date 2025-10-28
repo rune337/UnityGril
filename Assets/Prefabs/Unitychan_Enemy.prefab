@@ -2873,10 +2873,10 @@ GameObject:
   - component: {fileID: 7205937656598551265}
   - component: {fileID: 2709904675075683239}
   - component: {fileID: 6701116873005794022}
-  - component: {fileID: 1421837633602193694}
+  - component: {fileID: -6146381792416250014}
   m_Layer: 0
-  m_Name: Unitychan_Enemy_Leader
-  m_TagString: Enemy_Leader
+  m_Name: Unitychan_Enemy
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2910,7 +2910,7 @@ Animator:
   m_GameObject: {fileID: 2670251432214332900}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 8f0565f23a2b58541a475bd3c1393052, type: 3}
-  m_Controller: {fileID: 9100000, guid: 12a1641fc127d41d18ca240abf0455a2, type: 2}
+  m_Controller: {fileID: 9100000, guid: ecf741b3d6b284beb84c3fb78fd80226, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -3209,7 +3209,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1421837633602193694
+--- !u!114 &-6146381792416250014
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3218,7 +3218,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2670251432214332900}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0981d11362ea84b369dbeea4a2467009, type: 3}
+  m_Script: {fileID: 11500000, guid: 694ac9ee7f806433689626e9d7b7fd98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
@@ -3226,14 +3226,15 @@ MonoBehaviour:
   stopRange: 2
   baseDiscrimination: 10
   targetTag: Player_Ba
-  detectionRange: 20
+  detectionRange: 80
   detectionRangeBaseCore: 1000
-  enemySpeed: 30
+  enemySpeed: 5
   attackInterval: 0.5
-  enemyLeaderIsAttack: 0
+  enemyIsAttack: 0
   baseCoreList: []
   PlayerBaseCoreList: []
   swordAttack: {fileID: 3346889663078933395, guid: f6479a391f2114375a97d57ab334b068, type: 3}
+  allyController: {fileID: -6125745635251866576, guid: 3bf806d6273b54b06a6e4672b8f709f9, type: 3}
   invincibilityDuration: 0.5
 --- !u!1 &2711926024762958715
 GameObject:

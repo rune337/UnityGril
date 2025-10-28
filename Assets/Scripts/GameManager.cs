@@ -20,15 +20,18 @@ public class GameManager : MonoBehaviour
 
     public string tagToSearch = "Base";
     public string playerTagToSearch = "Player_Ba";
+    public string enemyTagToSearch = "Enemy_Ba";
     public static GameState gameState;
 
     private List<GameObject> foundBaseObjects = new List<GameObject>();
     private List<GameObject> foundPlayerBaseObjects = new List<GameObject>();
+    private List<GameObject> foundEnemyBaseObjects = new List<GameObject>();
 
     public event Action<List<GameObject>> OnBaseCoreUpdated;
     public event Action<List<GameObject>> OnPlayerBaseCoreUpdated;
+    public event Action<List<GameObject>> OnEnemyBaseCoreUpdated;
 
-     private void Awake()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -39,6 +42,9 @@ public class GameManager : MonoBehaviour
 
         FindBaseObjects(tagToSearch);
         FindPlayerBaseObjects(playerTagToSearch);
+        FindEnemyBaseObjects(enemyTagToSearch);
+
+        gameState = GameState.playing;
     }
 
     public void RefreshBaseCoreOnce()
@@ -50,6 +56,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         FindPlayerBaseObjects(playerTagToSearch);
+        FindEnemyBaseObjects(enemyTagToSearch);
     }
 
     // タグから BaseCore を探してリスト化
@@ -57,7 +64,7 @@ public class GameManager : MonoBehaviour
     {
         foundBaseObjects.Clear();
 
-        // タグで検索
+        // Baseタグで検索
         GameObject[] baseObjects = GameObject.FindGameObjectsWithTag(tag);
 
         // 名前に "BaseCore" を含むものをリストに追加
@@ -78,21 +85,46 @@ public class GameManager : MonoBehaviour
     }
 
     //タグからPlayer_Baを探してリスト化
-     void FindPlayerBaseObjects(string tag)
+    void FindPlayerBaseObjects(string tag)
     {
         foundPlayerBaseObjects.Clear();
 
-        // タグで検索
+        // player_Baタグで検索
         GameObject[] PlayerBaseObjects = GameObject.FindGameObjectsWithTag(tag);
 
-        // 名前に "player_Ba" を含むものをリストに追加
+        // 名前に "BaseCore" を含むものをリストに追加
         foundPlayerBaseObjects = PlayerBaseObjects.Where(obj => obj != null && obj.name.Contains("BaseCore", StringComparison.OrdinalIgnoreCase)).ToList();
 
 
         //  Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
-           if (foundPlayerBaseObjects.Count> 0)
+        if (foundPlayerBaseObjects.Count > 0)
+        {
+            foreach (GameObject obj in foundPlayerBaseObjects)
+            {
+                if (obj != null)
+                {
+                    Debug.Log($"- {obj.name} (Tag: {obj.tag}, Instance ID: {obj.GetInstanceID()})");
+                }
+            }
+        }
+    }
+    
+    //タグからEnemy_Baを探してリスト化
+     void FindEnemyBaseObjects(string tag)
+    {
+        foundEnemyBaseObjects.Clear();
+
+        // Enemy_Baタグで検索
+        GameObject[] EnemyBaseObjects = GameObject.FindGameObjectsWithTag(tag);
+
+        // 名前に "BaseCore" を含むものをリストに追加
+        foundEnemyBaseObjects = EnemyBaseObjects.Where(obj => obj != null && obj.name.Contains("BaseCore", StringComparison.OrdinalIgnoreCase)).ToList();
+
+
+        //  Debug.Log($"登録された BaseCore の数: {foundBaseObjects.Count}");
+           if (foundEnemyBaseObjects.Count> 0)
            {
-               foreach (GameObject obj in foundPlayerBaseObjects)
+               foreach (GameObject obj in foundEnemyBaseObjects)
                {
                    if (obj != null)
                    {
@@ -108,15 +140,21 @@ public class GameManager : MonoBehaviour
     // }
 
 
-
+    //BaseCoreのオブジェクトを返す
     public List<GameObject> GetFoundBaseObjects()
     {
         return foundBaseObjects;
     }
 
-
+    //Player_Baのオブジェクトを返す
     public List<GameObject> PlayerGetFoundBaseObjects()
     {
         return foundPlayerBaseObjects;
+    }
+    
+    //Enemy_Baのオブジェクトを返す
+    public List<GameObject> EnemyGetFoundBaseObjects()
+    {
+        return foundEnemyBaseObjects;
     }
 }
