@@ -22,6 +22,9 @@ public class AllyController : MonoBehaviour
     GameObject closestEnemyBaseCore; //一番近い敵ベースコアオブジェクト
     float closestEnemyBaseCoreDistance; //一番近い敵ベースコアオブジェクトとの距離
 
+    GameObject closestPlayerBaseCore; //一番近い敵ベースコアオブジェクト
+    float closestPlayerBaseCoreDistance; //一番近い敵ベースコアオブジェクトとの距離
+
 
     float lastAttackTime = 0f; //前回攻撃したときのTime.timeを記録しておく変数
     float comboResetTime = 1.0f; //攻撃の猶予時間
@@ -32,10 +35,10 @@ public class AllyController : MonoBehaviour
     bool isInvincible = false; // 無敵状態を表すフラグ
     float invincibilityDuration = 0.5f; //無敵時間
 
-    float detectionRange = 80f; //敵・敵リーダー索敵範囲
+    float detectionRange = 30f; //敵・敵リーダー索敵範囲
     float stopRange = 2f; //停止距離
     float baseStopRange = 7.6f; //拠点サーバコア停止距離
-    float baseCoreDetectionRange = 1000f;
+    float baseCoreDetectionRange = 1000f; //コア探索範囲
 
     NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
     public float allySpeed = 5.0f; //移動速度
@@ -45,6 +48,22 @@ public class AllyController : MonoBehaviour
     bool lockOn = true;
 
     float allyHP = 10;
+
+
+    //敵オブジェクトと距離を紐付けるクラス
+    public class EnemyDistance
+    {
+        public GameObject enemyObject;
+        public float enemyDistance;
+
+        //コンストラクタ
+        public EnemyDistance(GameObject obj, float dist)
+        {
+            enemyObject = obj;
+            enemyDistance = dist;
+        }
+
+    }
 
     //ベースコアと距離を結びつけるクラス
     public class BaseCoreDistanceInfo
@@ -74,25 +93,25 @@ public class AllyController : MonoBehaviour
         }
 
         // デバッグ用
-        public override string ToString()
-        {
-            string name = enemyBaseCoreObject != null ? enemyBaseCoreObject.name : "null";
-            return $"BaseCore: {name}, Distance: {enemyBaseCoreDistance:F2}";
-        }
+        // public override string ToString()
+        // {
+        //     string name = enemyBaseCoreObject != null ? enemyBaseCoreObject.name : "null";
+        //     return $"BaseCore: {name}, Distance: {enemyBaseCoreDistance:F2}";
+        // }
 
     }
 
-    //敵オブジェクトと距離を紐付けるクラス
-    public class EnemyDistance
+    //味方ベースコアと距離を結びつけるクラス
+    public class PlayerBaseCoreDistanceInfo
     {
-        public GameObject enemyObject;
-        public float enemyDistance;
+        public GameObject playerBaseCoreObject; // GameObject は参照型なので、ここに格納されるのは参照
+        public float playerBaseCoreDistance;
 
-        //コンストラクタ
-        public EnemyDistance(GameObject obj, float dist)
+        // コンストラクタ
+        public PlayerBaseCoreDistanceInfo(GameObject obj, float dist)
         {
-            enemyObject = obj;
-            enemyDistance = dist;
+            playerBaseCoreObject = obj;
+            playerBaseCoreDistance = dist;
         }
 
     }
@@ -105,6 +124,9 @@ public class AllyController : MonoBehaviour
 
     //敵ベースコア距離クラス型を使って敵ベースコアの距離リストを定義
     private List<EnemyBaseCoreDistanceInfo> enemyBaseCoreDistanceInfo = new List<EnemyBaseCoreDistanceInfo>();
+
+    //味方ベースコア距離クラス型を使って敵ベースコアの距離リストを定義
+    private List<PlayerBaseCoreDistanceInfo> playerBaseCoreDistanceInfo = new List<PlayerBaseCoreDistanceInfo>();
 
     //スタート処理
     void Start()
@@ -121,8 +143,13 @@ public class AllyController : MonoBehaviour
     //メイン処理
     void Update()
     {
-        //一応マイフレーム敵リーダーを取得
-        enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
+        if (enemyLeader == null)
+        {
+            //一応マイフレーム敵リーダーを取得
+            // enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
+            return;
+        }
+
 
         //敵の数は変化するのでマイフレーム取得
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
@@ -133,6 +160,7 @@ public class AllyController : MonoBehaviour
         //2 敵が範囲にいる
         //3 Base Core(フリー拠点サーバー)が範囲にいる
         //4 Enemy_Ba(敵拠点サーバー)が範囲にいる
+        //5 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
 
 
         //敵リーダーがいる時
@@ -147,15 +175,16 @@ public class AllyController : MonoBehaviour
         }
 
         //敵がいる時
-        if (enemy != null)
+        if (enemy.Length != 0)
         {
+            enemyDistance.Clear();
             distanceEnemy = new float[enemy.Length]; //敵の距離を入れる配列の初期化
 
             for (int i = 0; i < enemy.Length; i++)
             {
                 distanceEnemy[i] = Vector3.Distance(enemy[i].transform.position, transform.position);
                 enemyDistance.Add(new EnemyDistance(enemy[i], distanceEnemy[i]));
-                if (enemyDistance != null)
+                if (enemyDistance.Count != 0)
                 {
                     closestEnemy = ClosestObject(enemyDistance);
                     closestEnemyDistance = Vector3.Distance(closestEnemy.transform.position, transform.position);
@@ -173,20 +202,22 @@ public class AllyController : MonoBehaviour
         //ベースコアがいる時
         if (GameManager.Instance.GetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
         {
+            // baseCoreDistanceInfo.Clear();
+
             for (int i = 0; i < GameManager.Instance.GetFoundBaseObjects().Count; i++)
             {
                 float distance = Vector3.Distance(GameManager.Instance.GetFoundBaseObjects()[i].transform.position, transform.position);
                 baseCoreDistanceInfo.Add(new BaseCoreDistanceInfo(GameManager.Instance.GetFoundBaseObjects()[i], distance));
             }
 
-            if (baseCoreDistanceInfo != null)
+            if (baseCoreDistanceInfo.Count != 0)
             {
                 closestBaseCore = ClosestObject(baseCoreDistanceInfo);
                 closestBaseCoreDistance = Vector3.Distance(closestBaseCore.transform.position, transform.position);
 
                 if (closestBaseCoreDistance <= baseCoreDetectionRange)
                 {
-                    CoreMove(closestBaseCore, closestBaseCoreDistance);
+                    MoveCore(closestBaseCore, closestBaseCoreDistance);
                     return;
                 }
             }
@@ -195,24 +226,51 @@ public class AllyController : MonoBehaviour
         //敵ベースコアがいる時
         if (GameManager.Instance.EnemyGetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
         {
+            enemyBaseCoreDistanceInfo.Clear();
+
             for (int i = 0; i < GameManager.Instance.EnemyGetFoundBaseObjects().Count; i++)
             {
                 float distance = Vector3.Distance(GameManager.Instance.EnemyGetFoundBaseObjects()[i].transform.position, transform.position);
                 enemyBaseCoreDistanceInfo.Add(new EnemyBaseCoreDistanceInfo(GameManager.Instance.EnemyGetFoundBaseObjects()[i], distance));
             }
 
-            if (enemyBaseCoreDistanceInfo != null)
+            if (enemyBaseCoreDistanceInfo.Count != 0)
             {
                 closestEnemyBaseCore = ClosestObject(enemyBaseCoreDistanceInfo);
                 closestEnemyBaseCoreDistance = Vector3.Distance(closestEnemyBaseCore.transform.position, transform.position);
 
                 if (closestEnemyBaseCoreDistance <= baseCoreDetectionRange)
                 {
-                    CoreMove(closestEnemyBaseCore, closestBaseCoreDistance);
+                    MoveCore(closestEnemyBaseCore, closestBaseCoreDistance);
                     return;
                 }
             }
         }
+
+        //味方に近づいた時に止めないと全部拠点制圧して入ってきた味方止まるところないから
+        //味方ベースコアがいる時
+         if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
+         {
+             playerBaseCoreDistanceInfo.Clear();
+
+             for (int i = 0; i < GameManager.Instance.PlayerGetFoundBaseObjects().Count; i++)
+             {
+                 float distance = Vector3.Distance(GameManager.Instance.PlayerGetFoundBaseObjects()[i].transform.position, transform.position);
+                 playerBaseCoreDistanceInfo.Add(new PlayerBaseCoreDistanceInfo(GameManager.Instance.PlayerGetFoundBaseObjects()[i], distance));
+             }
+
+             if (playerBaseCoreDistanceInfo.Count != 0)
+             {
+                 closestPlayerBaseCore = ClosestObject(playerBaseCoreDistanceInfo);
+                 closestPlayerBaseCoreDistance = Vector3.Distance(closestPlayerBaseCore.transform.position, transform.position);
+
+                 if (closestPlayerBaseCoreDistance <= baseCoreDetectionRange)
+                 {
+                     MoveCore(closestPlayerBaseCore, closestPlayerBaseCoreDistance);
+                     return;
+                 }
+             }
+         }
 
 
 
@@ -246,18 +304,12 @@ public class AllyController : MonoBehaviour
     }
 
     //拠点サーバへ移動するメソッド
-    void CoreMove(GameObject obj, float distance)
+    void MoveCore(GameObject obj, float distance)
     {
         //ベースコア攻撃判別フラグ
         bool playerBase = false;
-        if (obj.tag.Contains("Player"))
+        if (obj.tag.Contains("Player_Ba"))
             playerBase = true;
-
-        if (lockOn)
-        {
-            //オブジェクトの方を向く
-            transform.LookAt(obj.transform.position);
-        }
 
         //オブジェクトとの距離が停止距離より遠い時
         if (distance >= baseStopRange)
@@ -272,8 +324,11 @@ public class AllyController : MonoBehaviour
             navMeshAgent.isStopped = true;
             animator.SetBool("isRun", false);
             //攻撃中でないかつ前回の攻撃から0.5経過
-            if (!allyIsAttack && Time.time >= attackTimer && !playerBase)
-                AttackCombo();
+            if (!playerBase)
+            {
+                if (!allyIsAttack && Time.time >= attackTimer)
+                    AttackCombo();
+            }
         }
     }
 
@@ -361,16 +416,39 @@ public class AllyController : MonoBehaviour
     void FootL() { /* 足音処理など */ }
     void Hit() { /* 攻撃ヒット時の処理など */ }
 
+    //以下ClosestObjectのオーバロードで同じメソッドを複数
+    //オーバーロード最も近い敵のオブジェクトを返す
+    public GameObject ClosestObject(List<EnemyDistance> enemyDistance)
+    {
+        if (enemyDistance.Count == 0)
+        {
+            return null;
+        }
+
+        //リストの最初の要素を最も近い値として定義
+        EnemyDistance firstInfo = enemyDistance[0];
+
+        // 2番目の要素から最後までループして比較
+        for (int i = 1; i < enemyDistance.Count; i++)
+        {
+            if (enemyDistance[i].enemyDistance < firstInfo.enemyDistance)
+            {
+                // より近いものが見つかったら更新
+                firstInfo = enemyDistance[i];
+            }
+        }
+        return firstInfo.enemyObject;
+    }
 
     //オーバーロード最も近いベースコアのオブジェクトを返す
     public GameObject ClosestObject(List<BaseCoreDistanceInfo> baseCoreDistanceInfo)
     {
-        //リストの最初の要素を最も近い値として定義
-        BaseCoreDistanceInfo firstInfo = baseCoreDistanceInfo[0];
-        if (baseCoreDistanceInfo == null)
+        if (baseCoreDistanceInfo.Count == 0)
         {
             return null;
         }
+        //リストの最初の要素を最も近い値として定義
+        BaseCoreDistanceInfo firstInfo = baseCoreDistanceInfo[0];
 
         // 2番目の要素から最後までループして比較
         for (int i = 1; i < baseCoreDistanceInfo.Count; i++)
@@ -387,12 +465,13 @@ public class AllyController : MonoBehaviour
     //オーバーロード最も近い敵ベースコアのオブジェクトを返す
     public GameObject ClosestObject(List<EnemyBaseCoreDistanceInfo> enemyBaseCoreDistanceInfo)
     {
-        //リストの最初の要素を最も近い値として定義
-        EnemyBaseCoreDistanceInfo firstInfo = enemyBaseCoreDistanceInfo[0];
-        if (enemyBaseCoreDistanceInfo == null)
+
+        if (enemyBaseCoreDistanceInfo.Count == 0)
         {
             return null;
         }
+        //リストの最初の要素を最も近い値として定義
+        EnemyBaseCoreDistanceInfo firstInfo = enemyBaseCoreDistanceInfo[0];
 
         // 2番目の要素から最後までループして比較
         for (int i = 1; i < enemyBaseCoreDistanceInfo.Count; i++)
@@ -406,28 +485,30 @@ public class AllyController : MonoBehaviour
         return firstInfo.enemyBaseCoreObject;
     }
 
-
-    //オーバーロード最も近い敵のオブジェクトを返す
-    public GameObject ClosestObject(List<EnemyDistance> enemyDistance)
+    //オーバーロード最も近い味方ベースコアのオブジェクトを返す
+    public GameObject ClosestObject(List<PlayerBaseCoreDistanceInfo> playerBaseCoreDistanceInfo)
     {
-        //リストの最初の要素を最も近い値として定義
-        EnemyDistance firstInfo = enemyDistance[0];
-        if (enemyDistance == null)
+
+        if (playerBaseCoreDistanceInfo.Count == 0)
         {
             return null;
         }
+        //リストの最初の要素を最も近い値として定義
+        PlayerBaseCoreDistanceInfo firstInfo = playerBaseCoreDistanceInfo[0];
 
         // 2番目の要素から最後までループして比較
-        for (int i = 1; i < enemyDistance.Count; i++)
+        for (int i = 1; i < playerBaseCoreDistanceInfo.Count; i++)
         {
-            if (enemyDistance[i].enemyDistance < firstInfo.enemyDistance)
+            if (playerBaseCoreDistanceInfo[i].playerBaseCoreDistance < firstInfo.playerBaseCoreDistance)
             {
                 // より近いものが見つかったら更新
-                firstInfo = enemyDistance[i];
+                firstInfo = playerBaseCoreDistanceInfo[i];
             }
         }
-        return firstInfo.enemyObject;
+        return firstInfo.playerBaseCoreObject;
     }
+    //オーバーロードここまで
+
 
     //デバッグ表示
     void OnDrawGizmos()
