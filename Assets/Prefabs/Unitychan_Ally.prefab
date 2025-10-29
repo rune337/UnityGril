@@ -2873,10 +2873,10 @@ GameObject:
   - component: {fileID: 7205937656598551265}
   - component: {fileID: 2709904675075683239}
   - component: {fileID: 6701116873005794022}
-  - component: {fileID: -6125745635251866576}
+  - component: {fileID: 3298861996854961630}
   m_Layer: 0
   m_Name: Unitychan_Ally
-  m_TagString: Player
+  m_TagString: PlayerAlly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3187,6 +3187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIsAttack: 0
+  swordCollider: {fileID: 0}
 --- !u!195 &6701116873005794022
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3209,7 +3210,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &-6125745635251866576
+--- !u!114 &3298861996854961630
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3221,21 +3222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c226a4c4180547728b7309d08fe9def, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  attackRange: 0.5
-  stopRange: 2
-  baseDiscrimination: 10
-  targetTag: Player_Ba
-  detectionRange: 80
-  detectionRangeBaseCore: 1000
-  enemySpeed: 5
-  attackInterval: 0.5
-  allyIsAttack: 0
-  baseCoreList: []
-  EnemyBaseCoreList: []
-  enemyController: {fileID: -6146381792416250014, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
-  enemyLeaderController: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
-  invincibilityDuration: 0.5
+  allySpeed: 5
   swordCollider: {fileID: 5460657558678849702}
 --- !u!1 &2711926024762958715
 GameObject:

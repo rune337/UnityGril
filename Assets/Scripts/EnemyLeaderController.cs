@@ -368,8 +368,8 @@ public class EnemyLeaderController : MonoBehaviour
             animator.SetBool("isRun", false);
 
             //攻撃中でないかつ前回の攻撃から0.5経過
-            if (!enemyLeaderIsAttack && Time.time >= attackTimer)
-                 AttackCombo();
+            // if (!enemyLeaderIsAttack && Time.time >= attackTimer)
+            //      AttackCombo();
         }
     }
 

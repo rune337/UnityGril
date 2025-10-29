@@ -41,7 +41,7 @@ public class BaseRange : MonoBehaviour
         {
             // Debug.Log("タグ呼び出し");
             //プレイヤーが侵入
-            if (other.gameObject.tag == "Player")
+            if (other.gameObject.tag == "Player" || other.gameObject.tag == "PlayerAlly")
             {
                 this.tag = "Player_Ba"; //拠点の陣営タグ変更
                 baseCore.tag = "Player_Ba"; //コアの陣営タグ変更

@@ -12,6 +12,7 @@ TagManager:
   - Enemy_Ba
   - EnemySword
   - PlayerSword
+  - PlayerAlly
   layers:
   - Default
   - TransparentFX

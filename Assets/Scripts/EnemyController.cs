@@ -23,7 +23,7 @@ public class EnemyController : MonoBehaviour
     public float detectionRange = 80f; //索敵範囲
     public float detectionRangeBaseCore = 1000f; //ベースコア捜索範囲
 
-    public float enemySpeed = 5.0f;
+    public float allySpeed = 5.0f;
 
     bool lockOn = true; //ターゲット //壁にぶつかるのでコメントアウト
 
@@ -373,9 +373,9 @@ public class EnemyController : MonoBehaviour
             navMeshAgent.isStopped = true;
             animator.SetBool("isRun", false);
 
-            //攻撃中でないかつ前回の攻撃から0.5経過
-            if (!enemyIsAttack && Time.time >= attackTimer)
-                 AttackCombo();
+            // //攻撃中でないかつ前回の攻撃から0.5経過
+            //  if (!enemyIsAttack && Time.time >= attackTimer)
+            //       AttackCombo();
             
         }
     }
