@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using System;
+using UnityEngine.UIElements;
 
 public class AllyController : MonoBehaviour
 {
@@ -37,7 +39,7 @@ public class AllyController : MonoBehaviour
 
     float detectionRange = 30f; //敵・敵リーダー索敵範囲
     float stopRange = 2f; //停止距離
-    float baseStopRange = 7.6f; //拠点サーバコア停止距離
+    float baseStopRange = 8.0f; //拠点サーバコア停止距離
     float baseCoreDetectionRange = 1000f; //コア探索範囲
 
     NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
@@ -143,14 +145,6 @@ public class AllyController : MonoBehaviour
     //メイン処理
     void Update()
     {
-        if (enemyLeader == null)
-        {
-            //一応マイフレーム敵リーダーを取得
-            // enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
-            return;
-        }
-
-
         //敵の数は変化するのでマイフレーム取得
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
 
@@ -202,7 +196,7 @@ public class AllyController : MonoBehaviour
         //ベースコアがいる時
         if (GameManager.Instance.GetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
         {
-            // baseCoreDistanceInfo.Clear();
+            baseCoreDistanceInfo.Clear();
 
             for (int i = 0; i < GameManager.Instance.GetFoundBaseObjects().Count; i++)
             {
@@ -214,7 +208,8 @@ public class AllyController : MonoBehaviour
             {
                 closestBaseCore = ClosestObject(baseCoreDistanceInfo);
                 closestBaseCoreDistance = Vector3.Distance(closestBaseCore.transform.position, transform.position);
-
+                Debug.Log(closestBaseCore);
+                // Debug.Log(closestBaseCoreDistance);
                 if (closestBaseCoreDistance <= baseCoreDetectionRange)
                 {
                     MoveCore(closestBaseCore, closestBaseCoreDistance);
@@ -236,12 +231,14 @@ public class AllyController : MonoBehaviour
 
             if (enemyBaseCoreDistanceInfo.Count != 0)
             {
+                Debug.Log("敵コア");
                 closestEnemyBaseCore = ClosestObject(enemyBaseCoreDistanceInfo);
                 closestEnemyBaseCoreDistance = Vector3.Distance(closestEnemyBaseCore.transform.position, transform.position);
-
+                Debug.Log(closestEnemyBaseCore);
+                Debug.Log(closestEnemyBaseCoreDistance);
                 if (closestEnemyBaseCoreDistance <= baseCoreDetectionRange)
                 {
-                    MoveCore(closestEnemyBaseCore, closestBaseCoreDistance);
+                    MoveCore(closestEnemyBaseCore, closestEnemyBaseCoreDistance);
                     return;
                 }
             }
@@ -249,28 +246,30 @@ public class AllyController : MonoBehaviour
 
         //味方に近づいた時に止めないと全部拠点制圧して入ってきた味方止まるところないから
         //味方ベースコアがいる時
-         if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
-         {
-             playerBaseCoreDistanceInfo.Clear();
+        if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
+        {
+            Debug.Log("味方コア");
+            playerBaseCoreDistanceInfo.Clear();
 
-             for (int i = 0; i < GameManager.Instance.PlayerGetFoundBaseObjects().Count; i++)
-             {
-                 float distance = Vector3.Distance(GameManager.Instance.PlayerGetFoundBaseObjects()[i].transform.position, transform.position);
-                 playerBaseCoreDistanceInfo.Add(new PlayerBaseCoreDistanceInfo(GameManager.Instance.PlayerGetFoundBaseObjects()[i], distance));
-             }
+            for (int i = 0; i < GameManager.Instance.PlayerGetFoundBaseObjects().Count; i++)
+            {
+                float distance = Vector3.Distance(GameManager.Instance.PlayerGetFoundBaseObjects()[i].transform.position, transform.position);
+                playerBaseCoreDistanceInfo.Add(new PlayerBaseCoreDistanceInfo(GameManager.Instance.PlayerGetFoundBaseObjects()[i], distance));
+            }
 
-             if (playerBaseCoreDistanceInfo.Count != 0)
-             {
-                 closestPlayerBaseCore = ClosestObject(playerBaseCoreDistanceInfo);
-                 closestPlayerBaseCoreDistance = Vector3.Distance(closestPlayerBaseCore.transform.position, transform.position);
-
-                 if (closestPlayerBaseCoreDistance <= baseCoreDetectionRange)
-                 {
-                     MoveCore(closestPlayerBaseCore, closestPlayerBaseCoreDistance);
-                     return;
-                 }
-             }
-         }
+            if (playerBaseCoreDistanceInfo.Count != 0)
+            {
+                closestPlayerBaseCore = ClosestObject(playerBaseCoreDistanceInfo);
+                closestPlayerBaseCoreDistance = Vector3.Distance(closestPlayerBaseCore.transform.position, transform.position);
+                Debug.Log(closestPlayerBaseCore);
+                Debug.Log(closestPlayerBaseCoreDistance);
+                if (closestPlayerBaseCoreDistance <= baseCoreDetectionRange)
+                {
+                    MoveCore(closestPlayerBaseCore, closestPlayerBaseCoreDistance);
+                    return;
+                }
+            }
+        }
 
 
 
@@ -400,6 +399,17 @@ public class AllyController : MonoBehaviour
         }
     }
 
+    //オブジェクト破壊時に作動するよう元々定義されているメソッドOnDestroy
+     private void OnDestroy()
+    {
+        //GameManagerが存在しない、またはアプリ終了中なら何もしない
+       if (GameManager.Instance == null || GameManager.Instance.IsQuitting)
+        return;
+
+        // 味方が倒れたら条件に応じて味方を生成するメソッドを呼び出す
+        GameManager.Instance.OnAllyDestroyed();
+    }
+
     //無敵時間
     IEnumerator SetInvincibilityTimer()
     {
@@ -443,6 +453,7 @@ public class AllyController : MonoBehaviour
     //オーバーロード最も近いベースコアのオブジェクトを返す
     public GameObject ClosestObject(List<BaseCoreDistanceInfo> baseCoreDistanceInfo)
     {
+        Debug.Log("ベースコアのオーバーロード");
         if (baseCoreDistanceInfo.Count == 0)
         {
             return null;
@@ -465,7 +476,7 @@ public class AllyController : MonoBehaviour
     //オーバーロード最も近い敵ベースコアのオブジェクトを返す
     public GameObject ClosestObject(List<EnemyBaseCoreDistanceInfo> enemyBaseCoreDistanceInfo)
     {
-
+        Debug.Log("敵ベースコアのオーバーロード");
         if (enemyBaseCoreDistanceInfo.Count == 0)
         {
             return null;

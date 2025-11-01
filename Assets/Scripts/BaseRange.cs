@@ -14,7 +14,7 @@ public class BaseRange : MonoBehaviour
     private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
     private BaseCore baseCoreDamageTag;
     public GameObject allyPrefabs;
-     public GameObject enemyPrefabs;
+    public GameObject enemyPrefabs;
 
     public GameObject SpawnPoint; // 敵生成位置
 
@@ -50,11 +50,12 @@ public class BaseRange : MonoBehaviour
                 baseCoreChangeColor.SetColor(playerColor);
                 GameManager.Instance.RefreshBaseCoreOnce();
 
-                GameObject obj = Instantiate(
-                    allyPrefabs,
-                    SpawnPoint.transform.position,
-                    Quaternion.identity
-                    ); //味方を生成
+                // GameObject obj = Instantiate(
+                //     allyPrefabs,
+                //     SpawnPoint.transform.position,
+                //     Quaternion.identity
+                //     ); //味方を生成
+                GameManager.Instance.PlayerNPCGenerate(allyPrefabs, SpawnPoint.transform.position); //GameManagerの味方生成メソッドの呼び出し
             }
 
             //敵侵入
@@ -68,16 +69,14 @@ public class BaseRange : MonoBehaviour
                 GameManager.Instance.RefreshBaseCoreOnce();
 
 
-                    GameObject obj = Instantiate(
-                    enemyPrefabs,
-                    SpawnPoint.transform.position,
-                    Quaternion.identity
-                    ); //敵を生成
+                // GameObject obj = Instantiate(
+                // enemyPrefabs,
+                // SpawnPoint.transform.position,
+                // Quaternion.identity
+                // ); //敵を生成
+                GameManager.Instance.EnemyNPCGenerate(enemyPrefabs, SpawnPoint.transform.position); //GameManagerの敵生成メソッドの呼び出し
             }
-            GameManager.Instance.RefreshBaseCoreOnce();
-
         }
-
     }
 
     //タグを変える用のメソッド

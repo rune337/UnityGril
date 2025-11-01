@@ -732,7 +732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8303688080576569836, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 159.8
+      value: 213
       objectReference: {fileID: 0}
     - target: {fileID: 8303688080576569836, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
       propertyPath: m_LocalPosition.y
@@ -740,7 +740,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8303688080576569836, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -143
       objectReference: {fileID: 0}
     - target: {fileID: 8303688080576569836, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1198,6 +1198,8 @@ MonoBehaviour:
   tagToSearch: Base
   playerTagToSearch: Player_Ba
   enemyTagToSearch: Enemy_Ba
+  playerAllyPrefabs: {fileID: 2670251432214332900, guid: 3bf806d6273b54b06a6e4672b8f709f9, type: 3}
+  enemyPrefabs: {fileID: 2670251432214332900, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
 --- !u!4 &1069707321
 Transform:
   m_ObjectHideFlags: 0
@@ -1499,6 +1501,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 730655807893191692, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
+      objectReference: {fileID: 0}
     - target: {fileID: 1040445638801667404, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
       propertyPath: m_Name
       value: Base
@@ -1551,6 +1557,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5901606561974192465, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1575,6 +1585,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 730655807893191692, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
+      objectReference: {fileID: 0}
     - target: {fileID: 1040445638801667404, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
       propertyPath: m_Name
       value: Base
@@ -1626,6 +1640,10 @@ PrefabInstance:
     - target: {fileID: 4457884424857081182, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5901606561974192465, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1702,6 +1720,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
+      propertyPath: enemySpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
       propertyPath: swordAttack
       value: 
       objectReference: {fileID: 1981182335}
@@ -1766,6 +1788,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 730655807893191692, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
+      objectReference: {fileID: 0}
     - target: {fileID: 1040445638801667404, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
       propertyPath: m_Name
       value: Base
@@ -1821,6 +1847,10 @@ PrefabInstance:
     - target: {fileID: 4457884424857081182, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5901606561974192465, guid: f9803e48987654d5b86b197f4a96aeb4, type: 3}
+      propertyPath: m_TagString
+      value: Base
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
