@@ -155,6 +155,12 @@ public class PlayerController : MonoBehaviour
             Destroy(this.gameObject);
             GameManager.gameState = GameState.gameOver;
         }
+
+        //playerベースに入った時HP回復
+        if (other.gameObject.tag == "Player_Ba")
+        {
+            playerHP = 10;
+        }
     }
 
     IEnumerator SetInvincibilityTimer()
@@ -165,4 +171,5 @@ public class PlayerController : MonoBehaviour
         //時間が経過したら無敵状態を解除
         isInvincible = false;
     }
+    
 }

@@ -7780,6 +7780,7 @@ GameObject:
   - component: {fileID: 302188276189678008}
   - component: {fileID: 6375076213839224159}
   - component: {fileID: 3346889663078933395}
+  - component: {fileID: 4490103401087811827}
   m_Layer: 0
   m_Name: unitychan_dynamic
   m_TagString: Player
@@ -8118,6 +8119,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerIsAttack: 0
   swordCollider: {fileID: 3967395382462489474}
+--- !u!114 &4490103401087811827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8503360016795610297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605b0958ab61d4e19ae8bf2580bceff1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shieldPrefab: {fileID: 2354892476084145311, guid: d6d3f757c3f0145459857aff21d906a7, type: 3}
+  forwardOffset: 2
+  duration: 3
 --- !u!1 &8512451528836919558
 GameObject:
   m_ObjectHideFlags: 0
