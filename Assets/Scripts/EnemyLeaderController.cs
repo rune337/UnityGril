@@ -150,23 +150,11 @@ public class EnemyLeaderController : MonoBehaviour
 
 
         //行動順序
-        //1 プレイヤーが範囲にいる
-        //2 プレイヤー味方が範囲にいる
+        //1 プレイヤー味方が範囲にいる
+        //2 プレイヤーが範囲にいる
         //3 Base Core(フリー拠点サーバー)が範囲にいる
         //4 Player_Ba(味方拠点サーバー)が範囲にいる 
         //5 Enemy_Ba(敵拠点サーバー)が範囲にいる →これないと敵拠点だけになった時に止まれなくなる
-
-
-        //プレイヤーがいる時
-        if (player != null)
-        {
-            distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
-            if (distanceToPlayer <= detectionRange)
-            {
-                Move(player, distanceToPlayer);
-                return;
-            }
-        }
 
         //プレイヤーの味方がいる時
         if (playerAlly.Length != 0)
@@ -181,7 +169,7 @@ public class EnemyLeaderController : MonoBehaviour
                 if (playerAllyDistance.Count != 0)
                 {
                     closestPlayerAlly = ClosestObject(playerAllyDistance);
-                    closestPlayerAllyDistance= Vector3.Distance(closestPlayerAlly.transform.position, transform.position);
+                    closestPlayerAllyDistance = Vector3.Distance(closestPlayerAlly.transform.position, transform.position);
 
                     if (closestPlayerAllyDistance <= detectionRange)
                     {
@@ -192,6 +180,18 @@ public class EnemyLeaderController : MonoBehaviour
 
             }
         }
+
+        //プレイヤーがいる時
+        if (player != null)
+        {
+            distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+            if (distanceToPlayer <= detectionRange)
+            {
+                Move(player, distanceToPlayer);
+                return;
+            }
+        }
+
 
         //ベースコアがいる時
         if (GameManager.Instance.GetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
@@ -218,7 +218,7 @@ public class EnemyLeaderController : MonoBehaviour
             }
         }
 
-       
+
         //プレイヤー陣営のベースコアがいる時
         if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
         {

@@ -9,6 +9,7 @@ public class AllyController : MonoBehaviour
 {
     Animator animator;
 
+    GameObject player;
     GameObject[] enemy; //敵配列、敵は複数
     GameObject enemyLeader; //敵リーダ変数,敵リーダーは1人なので変数
 
@@ -41,6 +42,7 @@ public class AllyController : MonoBehaviour
     float stopRange = 2f; //停止距離
     float baseStopRange = 8.0f; //拠点サーバコア停止距離
     float baseCoreDetectionRange = 1000f; //コア探索範囲
+    float playerRange = 1000f; //プレイヤー探索範囲
 
     NavMeshAgent navMeshAgent; //NavMeshAgentコンポーネント
     public float allySpeed = 5.0f; //移動速度
@@ -138,6 +140,7 @@ public class AllyController : MonoBehaviour
         animator = GetComponent<Animator>();
         enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
+        player = GameObject.FindGameObjectWithTag("Player");
 
 
     }
@@ -150,24 +153,14 @@ public class AllyController : MonoBehaviour
 
 
         //行動順序
-        //1 敵リーダが範囲にいる
-        //2 敵が範囲にいる
+        //1 敵が範囲にいる
+        //2 敵リーダが範囲にいる
         //3 Base Core(フリー拠点サーバー)が範囲にいる
         //4 Enemy_Ba(敵拠点サーバー)が範囲にいる
-        //5 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
+        //5 プレイヤーについていく
+        //6 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
 
-
-        //敵リーダーがいる時
-        if (enemyLeader != null)
-        {
-            distanceToEnemyLeader = Vector3.Distance(enemyLeader.transform.position, transform.position);
-            if (distanceToEnemyLeader <= detectionRange)
-            {
-                Move(enemyLeader, distanceToEnemyLeader);
-                return;
-            }
-        }
-
+        
         //敵がいる時
         if (enemy.Length != 0)
         {
@@ -190,6 +183,17 @@ public class AllyController : MonoBehaviour
                     }
                 }
 
+            }
+        }
+
+        //敵リーダーがいる時
+        if (enemyLeader != null)
+        {
+            distanceToEnemyLeader = Vector3.Distance(enemyLeader.transform.position, transform.position);
+            if (distanceToEnemyLeader <= detectionRange)
+            {
+                Move(enemyLeader, distanceToEnemyLeader);
+                return;
             }
         }
 
@@ -244,6 +248,18 @@ public class AllyController : MonoBehaviour
             }
         }
 
+        //プレイヤーがいる時
+        if (player != null)
+        {
+            float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+            if (distanceToPlayer <= playerRange)
+            {
+                Move(player, distanceToPlayer);
+                return;
+            }
+        }
+
+
         //味方に近づいた時に止めないと全部拠点制圧して入ってきた味方止まるところないから
         //味方ベースコアがいる時
         if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
@@ -297,7 +313,7 @@ public class AllyController : MonoBehaviour
             navMeshAgent.isStopped = true;
             animator.SetBool("isRun", false);
             //攻撃中でないかつ前回の攻撃から0.5経過
-            if (!allyIsAttack && Time.time >= attackTimer)
+            if (!allyIsAttack && Time.time >= attackTimer && obj != player)
                 AttackCombo();
         }
     }
@@ -400,11 +416,11 @@ public class AllyController : MonoBehaviour
     }
 
     //オブジェクト破壊時に作動するよう元々定義されているメソッドOnDestroy
-     private void OnDestroy()
+    private void OnDestroy()
     {
         //GameManagerが存在しない、またはアプリ終了中なら何もしない
-       if (GameManager.Instance == null || GameManager.Instance.IsQuitting)
-        return;
+        if (GameManager.Instance == null || GameManager.Instance.IsQuitting)
+            return;
 
         // 味方が倒れたら条件に応じて味方を生成するメソッドを呼び出す
         GameManager.Instance.OnAllyDestroyed();

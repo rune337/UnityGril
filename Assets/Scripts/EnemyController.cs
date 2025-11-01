@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour
 {
     Animator animator;
 
+    GameObject enemyLeader;
     GameObject[] playerAlly; //プレイヤー味方配列、味方は複数
     GameObject player; //プレイヤー変数,プレイヤーは1人なので変数
 
@@ -138,6 +139,7 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerAlly = GameObject.FindGameObjectsWithTag("PlayerAlly");
+        enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
 
 
     }
@@ -150,23 +152,12 @@ public class EnemyController : MonoBehaviour
 
 
         //行動順序
-        //1 プレイヤーが範囲にいる
-        //2 プレイヤー味方が範囲にいる
+        //1 プレイヤー味方が範囲にいる
+        //2 プレイヤーが範囲にいる
         //3 Base Core(フリー拠点サーバー)が範囲にいる
         //4 Player_Ba(味方拠点サーバー)が範囲にいる 
-        //5 Enemy_Ba(敵拠点サーバー)が範囲にいる →これないと敵拠点だけになった時に止まれなくなる
-
-
-        //プレイヤーがいる時
-        if (player != null)
-        {
-            distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
-            if (distanceToPlayer <= detectionRange)
-            {
-                Move(player, distanceToPlayer);
-                return;
-            }
-        }
+        //5 敵リーダーについていく
+        //6 Enemy_Ba(敵拠点サーバー)が範囲にいる →これないと敵拠点だけになった時に止まれなくなる
 
         //プレイヤーの味方がいる時
         if (playerAlly.Length != 0)
@@ -190,6 +181,17 @@ public class EnemyController : MonoBehaviour
                     }
                 }
 
+            }
+        }
+
+        //プレイヤーがいる時
+        if (player != null)
+        {
+            distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+            if (distanceToPlayer <= detectionRange)
+            {
+                Move(player, distanceToPlayer);
+                return;
             }
         }
 
@@ -245,6 +247,17 @@ public class EnemyController : MonoBehaviour
             }
         }
 
+        //敵リーダーがいる時
+        if (enemyLeader != null)
+        {
+            float distanceToEnemyLeader = Vector3.Distance(enemyLeader.transform.position, transform.position);
+            if (distanceToEnemyLeader <= detectionRange)
+            {
+                Move(enemyLeader, distanceToEnemyLeader);
+                return;
+            }
+        }
+
         //敵陣営のベースコアがいる時
         //敵陣営は自陣営に近づいた時に止めないと全部拠点制圧して入ってきた敵止まるところないから
         if (GameManager.Instance.EnemyGetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
@@ -297,7 +310,7 @@ public class EnemyController : MonoBehaviour
             navMeshAgent.isStopped = true;
             animator.SetBool("isRun", false);
             //攻撃中でないかつ前回の攻撃から0.5経過
-            if (!enemyIsAttack && Time.time >= attackTimer)
+            if (!enemyIsAttack && Time.time >= attackTimer && obj != enemyLeader)
                 AttackCombo();
         }
     }
