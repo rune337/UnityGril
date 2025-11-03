@@ -21,6 +21,8 @@ public class UiController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerController = player.GetComponent<PlayerController>(); //プレイヤーオブジェクトのコンポーネントを取得
+
         //プレイヤーのHPゲージ初期化
         currentPlayerHP = PlayerController.playerHP;
         playerLifeSlider.value = currentPlayerHP;
@@ -32,8 +34,8 @@ public class UiController : MonoBehaviour
         gameOverPanel.SetActive(false);
         gameClearPanel.SetActive(false);
 
-        playerController = player.GetComponent<PlayerController>(); //プレイヤーオブジェクトのコンポーネントを取得
-
+        playerHPPanel.SetActive(true);
+        enemyHPPanel.SetActive(true);
         isUnderPlayerLamp.SetActive(false); //プレイヤー集合フラグのランプ初期はfalseなので表示しない
 
 
@@ -50,7 +52,7 @@ public class UiController : MonoBehaviour
         currentEnemyHP = EnemyLeaderController.enemyLeaderHP;
         enemyLifeSlider.value = currentEnemyHP;
 
-        //プレイヤー集合フラグに合わせてランプをオンオフ
+        
         if (playerController.isUnderPlayer)
         {
             isUnderPlayerLamp.SetActive(true);
