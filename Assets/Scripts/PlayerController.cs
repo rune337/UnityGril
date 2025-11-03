@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     public static int playerHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
 
+    public bool isUnderPlayer = false; //プレイヤーのところに集まるフラグ
+
     void Awake()
     {
         //リトライ時にHP初期化
@@ -48,6 +50,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            // 現在の状態を反転させる (trueならfalseに、falseならtrueに)
+            isUnderPlayer = !isUnderPlayer;
+        }
+
         x = Input.GetAxis("Horizontal");
         z = Input.GetAxis("Vertical");
 
@@ -176,5 +184,5 @@ public class PlayerController : MonoBehaviour
         //時間が経過したら無敵状態を解除
         isInvincible = false;
     }
-    
+
 }

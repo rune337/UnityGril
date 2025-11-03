@@ -14,7 +14,10 @@ public class UiController : MonoBehaviour
     public GameObject gameClearPanel;
     public GameObject playerHPPanel;
     public GameObject enemyHPPanel;
+    public GameObject isUnderPlayerLamp; //プレイヤー集合フラグのランプ
 
+    public GameObject player;
+    PlayerController playerController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,6 +31,10 @@ public class UiController : MonoBehaviour
 
         gameOverPanel.SetActive(false);
         gameClearPanel.SetActive(false);
+
+        playerController = player.GetComponent<PlayerController>(); //プレイヤーオブジェクトのコンポーネントを取得
+
+        isUnderPlayerLamp.SetActive(false); //プレイヤー集合フラグのランプ初期はfalseなので表示しない
 
 
     }
@@ -43,11 +50,22 @@ public class UiController : MonoBehaviour
         currentEnemyHP = EnemyLeaderController.enemyLeaderHP;
         enemyLifeSlider.value = currentEnemyHP;
 
+        //プレイヤー集合フラグに合わせてランプをオンオフ
+        if (playerController.isUnderPlayer)
+        {
+            isUnderPlayerLamp.SetActive(true);
+        }
+        else if (!playerController.isUnderPlayer)
+        {
+            isUnderPlayerLamp.SetActive(false);
+        }
+
         if (GameManager.gameState == GameState.gameOver)
         {
             gameOverPanel.SetActive(true);
             playerHPPanel.SetActive(false);
             enemyHPPanel.SetActive(false);
+            isUnderPlayerLamp.SetActive(false);
 
 
             Cursor.lockState = CursorLockMode.None; //画面中心にカーソルのロック解除
@@ -59,17 +77,12 @@ public class UiController : MonoBehaviour
             gameClearPanel.SetActive(true);
             playerHPPanel.SetActive(false);
             enemyHPPanel.SetActive(false);
+            isUnderPlayerLamp.SetActive(false);
 
 
             Cursor.lockState = CursorLockMode.None; //画面中心にカーソルのロック解除
             Cursor.visible = true; //カーソルを表示
         }
-        else
-        {
-            gameOverPanel.SetActive(false);
-            gameClearPanel.SetActive(false);
-            playerHPPanel.SetActive(true);
-            enemyHPPanel.SetActive(true);
-        }
+
     }
 }

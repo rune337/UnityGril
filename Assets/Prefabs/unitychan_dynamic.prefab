@@ -8050,11 +8050,12 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  enemyLeaderController: {fileID: 0}
+  enemyLeaderController: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
   enemyController: {fileID: -6146381792416250014, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
   cameraTransform: {fileID: 0}
   isInvincible: 0
   invincibilityDuration: 0.5
+  isUnderPlayer: 0
 --- !u!54 &302188276189678008
 Rigidbody:
   m_ObjectHideFlags: 0

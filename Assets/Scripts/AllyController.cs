@@ -52,6 +52,7 @@ public class AllyController : MonoBehaviour
     bool lockOn = true;
 
     float allyHP = 10;
+    PlayerController playerController;
 
 
     //敵オブジェクトと距離を紐付けるクラス
@@ -147,6 +148,7 @@ public class AllyController : MonoBehaviour
         enemyLeader = GameObject.FindGameObjectWithTag("Enemy_Leader");
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
         player = GameObject.FindGameObjectWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
 
 
     }
@@ -159,13 +161,29 @@ public class AllyController : MonoBehaviour
 
 
         //行動順序
-        //1 敵が範囲にいる
-        //2 敵リーダが範囲にいる
-        //3 Base Core(フリー拠点サーバー)が範囲にいる
-        //4 Enemy_Ba(敵拠点サーバー)が範囲にいる
-        //5 プレイヤーについていく
-        //6 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
+        //1 プレイヤー集合フラグがONならプレイヤーについていく
+        //2 敵が範囲にいる
+        //3 敵リーダが範囲にいる
+        //4 Base Core(フリー拠点サーバー)が範囲にいる
+        //5 Enemy_Ba(敵拠点サーバー)が範囲にいる
+        //6 プレイヤーについていく
+        //7 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
 
+
+        //プレイヤー集合フラグがONの時、プレイヤーについていく
+        if (playerController.isUnderPlayer)
+        {
+            if (player != null)
+            {
+                float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+                if (distanceToPlayer <= playerRange)
+                {
+                    Move(player, distanceToPlayer);
+                    return;
+                }
+            }
+        }
+        
 
         //敵がいる時
         if (enemy.Length != 0)
@@ -432,7 +450,7 @@ public class AllyController : MonoBehaviour
         if (GameManager.gameState == GameState.playing)
         {
             //NPCを生成する処理を呼び出す
-            GameManager.Instance.DelayAction(1f,GameManager.Instance.OnAllyDestroyed);
+            GameManager.Instance.DelayAction(1f, GameManager.Instance.OnAllyDestroyed);
         }
     }
 
