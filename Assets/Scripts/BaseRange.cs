@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI; // NavMesh関連を使うために必要
+using System.Collections;
 
 public class BaseRange : MonoBehaviour
 {
@@ -55,7 +56,9 @@ public class BaseRange : MonoBehaviour
                 //     SpawnPoint.transform.position,
                 //     Quaternion.identity
                 //     ); //味方を生成
-                GameManager.Instance.PlayerNPCGenerate(allyPrefabs, SpawnPoint.transform.position); //GameManagerの味方生成メソッドの呼び出し
+
+                //1秒まって適正を呼び出すコルーチン
+                StartCoroutine(DelayedActionCoroutine());
             }
 
             //敵侵入
@@ -74,7 +77,9 @@ public class BaseRange : MonoBehaviour
                 // SpawnPoint.transform.position,
                 // Quaternion.identity
                 // ); //敵を生成
-                GameManager.Instance.EnemyNPCGenerate(enemyPrefabs, SpawnPoint.transform.position); //GameManagerの敵生成メソッドの呼び出し
+
+                //1秒まって適正を呼び出すコルーチン
+                 StartCoroutine(DelayedActionCoroutine());
             }
         }
     }
@@ -90,7 +95,7 @@ public class BaseRange : MonoBehaviour
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(playerColor);
             baseCoreDamageTag.DamageTag();
-            GameManager.Instance.OnAllyDestroyed();
+            StartCoroutine(DelayedActionCoroutine());
         }
 
         //プレイヤーから敵にする
@@ -101,8 +106,26 @@ public class BaseRange : MonoBehaviour
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(enemyColor);
             baseCoreDamageTag.DamageTag();
-            GameManager.Instance.OnEnemyDestroyed();
+            StartCoroutine(DelayedActionCoroutine());
 
+        }
+    }
+
+    // 1秒まって実行するコルーチン
+    IEnumerator DelayedActionCoroutine()
+    {
+        // 1秒待つ
+        yield return new WaitForSeconds(1f);
+
+        if (this.tag == "Player_Ba")
+        {
+            //条件に応じて味方を生成するメソッドを呼び出す
+            GameManager.Instance.OnAllyDestroyed();
+        }
+        else if (this.tag == "Enemy_Ba")
+        {
+            //条件に応じて敵を生成するメソッドを呼び出す
+            GameManager.Instance.OnEnemyDestroyed();
         }
     }
 

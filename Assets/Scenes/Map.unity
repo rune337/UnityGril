@@ -1064,6 +1064,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MapTerrain
       objectReference: {fileID: 0}
+    - target: {fileID: 969955687585839531, guid: b6c159521cf9542c28af8423e895a6e5, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2516935906898886698, guid: b6c159521cf9542c28af8423e895a6e5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

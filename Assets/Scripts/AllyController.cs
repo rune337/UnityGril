@@ -431,8 +431,8 @@ public class AllyController : MonoBehaviour
         //プレイ中のみ生成
         if (GameManager.gameState == GameState.playing)
         {
-            // 味方が倒れたら条件に応じて味方を生成するメソッドを呼び出す
-            GameManager.Instance.OnAllyDestroyed();
+            //NPCを生成する処理を呼び出す
+            GameManager.Instance.DelayAction(1f,GameManager.Instance.OnAllyDestroyed);
         }
     }
 

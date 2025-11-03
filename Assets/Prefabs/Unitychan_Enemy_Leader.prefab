@@ -3187,6 +3187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIsAttack: 0
+  swordCollider: {fileID: 0}
 --- !u!195 &6701116873005794022
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3221,21 +3222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0981d11362ea84b369dbeea4a2467009, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  attackRange: 0.5
-  stopRange: 2
-  baseDiscrimination: 10
-  targetTag: Player_Ba
-  detectionRange: 20
-  detectionRangeBaseCore: 1000
-  enemySpeed: 30
-  attackInterval: 0.5
-  enemyLeaderIsAttack: 0
-  baseCoreList: []
-  PlayerBaseCoreList: []
-  swordAttack: {fileID: 3346889663078933395, guid: f6479a391f2114375a97d57ab334b068, type: 3}
+  allySpeed: 5
   swordCollider: {fileID: 5460657558678849702}
-  invincibilityDuration: 0.5
 --- !u!1 &2711926024762958715
 GameObject:
   m_ObjectHideFlags: 0

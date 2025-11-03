@@ -428,12 +428,12 @@ public class EnemyController : MonoBehaviour
         //プレイ中のみ生成
         if (GameManager.gameState == GameState.playing)
         {
-            // 味方が倒れたら条件に応じて敵を生成するメソッドを呼び出す
-            GameManager.Instance.OnEnemyDestroyed();
+            //NPCを生成する処理を呼び出す
+             GameManager.Instance.DelayAction(1f,GameManager.Instance.OnEnemyDestroyed);
         }
     }
 
-    //無敵時間
+    //無敵時間を開始するコルーチン
     IEnumerator SetInvincibilityTimer()
     {
         //指定された時間だけ待機

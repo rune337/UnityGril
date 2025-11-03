@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq; // LINQを使うために必要
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public enum GameState
 {
@@ -162,10 +163,27 @@ public class GameManager : MonoBehaviour
     // }
 
     //味方NPC敗北時に味方NPCの数が味方拠点数より少なければランダムな味方拠点に生成
+
+    //Ally遅延させる処理
+    public void DelayAction(float delaySeconds, System.Action action)
+    {
+        StartCoroutine(DelayCoroutine(delaySeconds,action));
+    }
+
+    //NPC生成1秒遅らせるコルーチンを呼び出す
+    IEnumerator DelayCoroutine(float delaySeconds, System.Action action)
+    {
+        // 1秒待つ
+        yield return new WaitForSeconds(delaySeconds);
+        action?.Invoke();
+    }
+
+    //NPC生成1秒遅らせるコルーチン
     public void OnAllyDestroyed()
     {
         if (foundPlayerBaseObjects.Count != 0)
         {
+            Debug.Log("味方拠点数" + foundPlayerBaseObjects.Count);
             int randomIndex = UnityEngine.Random.Range(0, foundPlayerBaseObjects.Count);
             PlayerNPCGenerate(playerAllyPrefabs, foundPlayerBaseObjects[randomIndex].transform.position); //味方生成メソッド呼び出し
         }
@@ -187,7 +205,7 @@ public class GameManager : MonoBehaviour
     {
         enemy = GameObject.FindGameObjectsWithTag("Enemy");
         enemyBaseCore = GameObject.FindGameObjectsWithTag("Enemy_Ba");
-        if (enemy.Length < enemyBaseCore.Length)
+        if (enemy.Length < EnemyGetFoundBaseObjects().Count)
         {
             GameObject obj = Instantiate(
             generateObj,
@@ -203,7 +221,7 @@ public class GameManager : MonoBehaviour
         playerAlly = GameObject.FindGameObjectsWithTag("PlayerAlly");
         playerBaseCore = GameObject.FindGameObjectsWithTag("Player_Ba");
 
-        if (playerAlly.Length < playerBaseCore.Length)
+        if (playerAlly.Length < PlayerGetFoundBaseObjects().Count)
         {
             GameObject obj = Instantiate(
             generateObj,
