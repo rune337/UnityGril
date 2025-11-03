@@ -8044,15 +8044,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 3
-  RunSpeed: 60
+  RunSpeed: 20
   jumpPower: 20
   groundCheck: {fileID: 6975959554883331722}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  enemyLeaderController: {fileID: 1421837633602193694, guid: 026f7640bbc7e43279190dd997fa678f, type: 3}
+  enemyLeaderController: {fileID: 0}
   enemyController: {fileID: -6146381792416250014, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
-  cameraTransform: {fileID: 8453442490660160593, guid: b6794ff72935a4b1e91432ace5aae73e, type: 3}
+  cameraTransform: {fileID: 0}
   isInvincible: 0
   invincibilityDuration: 0.5
 --- !u!54 &302188276189678008
@@ -8131,8 +8131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605b0958ab61d4e19ae8bf2580bceff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldPrefab: {fileID: 2354892476084145311, guid: d6d3f757c3f0145459857aff21d906a7, type: 3}
-  forwardOffset: 2
+  shieldPrefab: {fileID: 717553341157769717, guid: 43f564818f8374827a3a052638eacec8, type: 3}
+  forwardOffset: 0.3
   duration: 3
 --- !u!1 &8512451528836919558
 GameObject:
@@ -8851,6 +8851,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9017881467755302919}
     m_Modifications:
+    - target: {fileID: 1809655013082704509, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3830600091909258567, guid: ee1f2b0f4754e44a397d1b53d33e379e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.019

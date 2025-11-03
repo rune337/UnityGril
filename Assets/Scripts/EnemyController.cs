@@ -131,6 +131,12 @@ public class EnemyController : MonoBehaviour
     //味方ベースコア距離クラス型を使って敵ベースコアの距離リストを定義
     private List<PlayerBaseCoreDistanceInfo> playerBaseCoreDistanceInfo = new List<PlayerBaseCoreDistanceInfo>();
 
+    void Awake()
+    {
+        //リトライ時にHP初期化
+        enemyHP = 10;
+    }
+
     //スタート処理
     void Start()
     {
@@ -419,8 +425,12 @@ public class EnemyController : MonoBehaviour
         if (GameManager.Instance == null || GameManager.Instance.IsQuitting)
             return;
 
-        // 味方が倒れたら条件に応じて敵を生成するメソッドを呼び出す
-        GameManager.Instance.OnEnemyDestroyed();
+        //プレイ中のみ生成
+        if (GameManager.gameState == GameState.playing)
+        {
+            // 味方が倒れたら条件に応じて敵を生成するメソッドを呼び出す
+            GameManager.Instance.OnEnemyDestroyed();
+        }
     }
 
     //無敵時間

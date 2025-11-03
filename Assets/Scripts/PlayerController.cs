@@ -27,6 +27,11 @@ public class PlayerController : MonoBehaviour
     public static int playerHP = 10;
     public float invincibilityDuration = 0.5f; //無敵時間
 
+    void Awake()
+    {
+        //リトライ時にHP初期化
+        playerHP = 10;
+    }
     // Start is called before the first frame update
     void Start()
     {

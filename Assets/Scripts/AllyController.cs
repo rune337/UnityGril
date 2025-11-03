@@ -132,6 +132,12 @@ public class AllyController : MonoBehaviour
     //味方ベースコア距離クラス型を使って敵ベースコアの距離リストを定義
     private List<PlayerBaseCoreDistanceInfo> playerBaseCoreDistanceInfo = new List<PlayerBaseCoreDistanceInfo>();
 
+    void Awake()
+    {
+        //リトライ時にHP初期化
+        allyHP = 10;
+    }
+
     //スタート処理
     void Start()
     {
@@ -160,7 +166,7 @@ public class AllyController : MonoBehaviour
         //5 プレイヤーについていく
         //6 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
 
-        
+
         //敵がいる時
         if (enemy.Length != 0)
         {
@@ -422,8 +428,12 @@ public class AllyController : MonoBehaviour
         if (GameManager.Instance == null || GameManager.Instance.IsQuitting)
             return;
 
-        // 味方が倒れたら条件に応じて味方を生成するメソッドを呼び出す
-        GameManager.Instance.OnAllyDestroyed();
+        //プレイ中のみ生成
+        if (GameManager.gameState == GameState.playing)
+        {
+            // 味方が倒れたら条件に応じて味方を生成するメソッドを呼び出す
+            GameManager.Instance.OnAllyDestroyed();
+        }
     }
 
     //無敵時間

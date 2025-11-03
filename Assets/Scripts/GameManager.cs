@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq; // LINQを使うために必要
 using System;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -55,6 +56,12 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
 
+        //前のシーンの参照をリセット
+        foundBaseObjects = new List<GameObject>();
+        foundPlayerBaseObjects = new List<GameObject>();
+        foundEnemyBaseObjects = new List<GameObject>();
+
+        //改めてシーンからオブジェクトを取得
         FindBaseObjects(tagToSearch);
         FindPlayerBaseObjects(playerTagToSearch);
         FindEnemyBaseObjects(enemyTagToSearch);
@@ -167,13 +174,12 @@ public class GameManager : MonoBehaviour
     //敵NPC敗北時に敵NPCの数が敵拠点数より少なければランダムな敵拠点に生成
     public void OnEnemyDestroyed()
     {
-        if (foundEnemyBaseObjects.Count != 0)
+        if (foundEnemyBaseObjects.Count!= 0)
         {
             int randomIndex = UnityEngine.Random.Range(0, foundEnemyBaseObjects.Count);
             EnemyNPCGenerate(enemyPrefabs, foundEnemyBaseObjects[randomIndex].transform.position); //敵生成メソッド呼び出し
         }
     }
-    
 
 
     //敵NPCを生成する

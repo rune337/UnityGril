@@ -49,7 +49,7 @@ public class EnemyLeaderController : MonoBehaviour
 
     bool lockOn = true;
 
-    float enemyLeaderHP = 10;
+    public static int  enemyLeaderHP = 10;
 
 
     //プレイヤー味方オブジェクトと距離を紐付けるクラス
@@ -130,6 +130,11 @@ public class EnemyLeaderController : MonoBehaviour
     //味方ベースコア距離クラス型を使って敵ベースコアの距離リストを定義
     private List<PlayerBaseCoreDistanceInfo> playerBaseCoreDistanceInfo = new List<PlayerBaseCoreDistanceInfo>();
 
+    void Awake()
+    {
+        //リトライ時にHP初期化
+        enemyLeaderHP = 10;
+    }
     //スタート処理
     void Start()
     {
@@ -396,6 +401,7 @@ public class EnemyLeaderController : MonoBehaviour
         if (enemyLeaderHP < 1)
         {
             Destroy(this.gameObject);
+            GameManager.gameState = GameState.gameClear;
         }
     }
 

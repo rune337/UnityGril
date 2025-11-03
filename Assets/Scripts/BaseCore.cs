@@ -6,7 +6,7 @@ public class BaseCore : MonoBehaviour
     bool isInvincible = false; //無敵フラグ
     public float invincibilityDuration = 0.5f; //無敵時間
 
-    public float coreHP = 10; //coreHP
+    public  int coreHP = 10; //coreHP
     string target;
 
     // BaseRangeへの参照を追加
@@ -21,7 +21,12 @@ public class BaseCore : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DamageTag();
+        if (coreHP <= 0)
+        {
+            baseRange.ChangeCoreTag();
+            coreHP = 10;//HPをリセット0 HPは攻撃を受けなくても0で剣に触れると切り替わってしまうので
+            Debug.Log("タグ切り替え");
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -44,11 +49,6 @@ public class BaseCore : MonoBehaviour
                 Debug.Log("コアのHP " + coreHP);
                 Debug.Log(target);
 
-                if (coreHP <= 0)
-                {
-                    baseRange.ChangeCoreTag();
-                    coreHP = 10;//HPをリセット0 HPは攻撃を受けなくても0で剣に触れると切り替わってしまうので
-                }
                 StartCoroutine(SetInvincibilityTimer());
             }
         }

@@ -90,6 +90,7 @@ public class BaseRange : MonoBehaviour
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(playerColor);
             baseCoreDamageTag.DamageTag();
+            GameManager.Instance.OnAllyDestroyed();
         }
 
         //プレイヤーから敵にする
@@ -100,6 +101,7 @@ public class BaseRange : MonoBehaviour
             // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
             baseCoreChangeColor.SetColor(enemyColor);
             baseCoreDamageTag.DamageTag();
+            GameManager.Instance.OnEnemyDestroyed();
 
         }
     }
