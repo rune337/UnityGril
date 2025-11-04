@@ -70,6 +70,26 @@ public class GameManager : MonoBehaviour
         gameState = GameState.playing;
     }
 
+    void Start()
+    {
+        //シーン情報の取得
+        Scene currentScene = SceneManager.GetActiveScene();
+
+        //シーン名の取得
+        String sceneName = currentScene.name;
+
+        //シーンに応じてBGMを流す
+        switch (sceneName)
+        {
+            case "Title":
+                SoundManager.instance.PlayBgm(BGMType.Title);
+                break;
+            case "Main":
+                SoundManager.instance.PlayBgm(BGMType.Main);
+                break;
+        }
+    }
+
     public void RefreshBaseCoreOnce()
     {
         FindBaseObjects(tagToSearch);
@@ -167,7 +187,7 @@ public class GameManager : MonoBehaviour
     //Ally遅延させる処理
     public void DelayAction(float delaySeconds, System.Action action)
     {
-        StartCoroutine(DelayCoroutine(delaySeconds,action));
+        StartCoroutine(DelayCoroutine(delaySeconds, action));
     }
 
     //NPC生成1秒遅らせるコルーチンを呼び出す
@@ -192,7 +212,7 @@ public class GameManager : MonoBehaviour
     //敵NPC敗北時に敵NPCの数が敵拠点数より少なければランダムな敵拠点に生成
     public void OnEnemyDestroyed()
     {
-        if (foundEnemyBaseObjects.Count!= 0)
+        if (foundEnemyBaseObjects.Count != 0)
         {
             int randomIndex = UnityEngine.Random.Range(0, foundEnemyBaseObjects.Count);
             EnemyNPCGenerate(enemyPrefabs, foundEnemyBaseObjects[randomIndex].transform.position); //敵生成メソッド呼び出し
@@ -229,6 +249,7 @@ public class GameManager : MonoBehaviour
             Quaternion.identity
             );
         }
+
     }
 
 

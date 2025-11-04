@@ -2874,6 +2874,7 @@ GameObject:
   - component: {fileID: 2709904675075683239}
   - component: {fileID: 6701116873005794022}
   - component: {fileID: -6146381792416250014}
+  - component: {fileID: -2315462615717085541}
   m_Layer: 0
   m_Name: Unitychan_Enemy
   m_TagString: Enemy
@@ -3187,6 +3188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIsAttack: 0
+  swordCollider: {fileID: 0}
 --- !u!195 &6701116873005794022
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3221,22 +3223,107 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 694ac9ee7f806433689626e9d7b7fd98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  attackRange: 0.5
-  stopRange: 2
-  baseDiscrimination: 10
-  targetTag: Player_Ba
-  detectionRange: 80
-  detectionRangeBaseCore: 1000
-  enemySpeed: 5
-  attackInterval: 0.5
-  enemyIsAttack: 0
-  baseCoreList: []
-  PlayerBaseCoreList: []
-  swordAttack: {fileID: 3346889663078933395, guid: f6479a391f2114375a97d57ab334b068, type: 3}
-  allyController: {fileID: -6125745635251866576, guid: 3bf806d6273b54b06a6e4672b8f709f9, type: 3}
-  invincibilityDuration: 0.5
+  allySpeed: 5
   swordCollider: {fileID: 5460657558678849702}
+  se_attack: {fileID: 8300000, guid: b5790a20e799a486c95945c051412993, type: 3}
+  se_footsteps: {fileID: 8300000, guid: 94426057c30474ec7afa620ba4e89453, type: 3}
+--- !u!82 &-2315462615717085541
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670251432214332900}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -556754892348710629, guid: 5d87c64f0261a4afaabf0c20b98df993, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 50
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2711926024762958715
 GameObject:
   m_ObjectHideFlags: 0

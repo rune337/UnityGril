@@ -12,7 +12,7 @@ public class ChangeScene : MonoBehaviour
     // タイトルボタンから呼び出す用
     public void GoToMainScene()
     {
-        SceneManager.LoadScene("Map");
+        SceneManager.LoadScene("Main");
     }
 
     public void GoToTitle()

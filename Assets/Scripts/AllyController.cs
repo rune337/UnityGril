@@ -54,6 +54,11 @@ public class AllyController : MonoBehaviour
     float allyHP = 10;
     PlayerController playerController;
 
+    //音にまつわるコンポーネントとSE音情報
+    AudioSource audio;
+    public AudioClip se_attack;
+    public AudioClip se_footsteps;
+
 
     //敵オブジェクトと距離を紐付けるクラス
     public class EnemyDistance
@@ -142,6 +147,7 @@ public class AllyController : MonoBehaviour
     //スタート処理
     void Start()
     {
+        audio = GetComponent<AudioSource>();
         attackTimer = Time.time;
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
@@ -183,7 +189,7 @@ public class AllyController : MonoBehaviour
                 }
             }
         }
-        
+
 
         //敵がいる時
         if (enemy.Length != 0)
@@ -466,9 +472,21 @@ public class AllyController : MonoBehaviour
     }
 
 
-    void FootR() { /* 足音処理など */ }
-    void FootL() { /* 足音処理など */ }
-    void Hit() { /* 攻撃ヒット時の処理など */ }
+    void FootR()
+    { //足音
+        SEPlay(SEType.FootSteps);
+    }
+    void FootL()
+    { //足音
+        SEPlay(SEType.FootSteps);
+    }
+
+    void Hit()
+    {
+        //攻撃音
+        SEPlay(SEType.Attack);
+
+    }
 
     //以下ClosestObjectのオーバロードで同じメソッドを複数
     //オーバーロード最も近い敵のオブジェクトを返す
@@ -584,6 +602,20 @@ public class AllyController : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopRange);
+    }
+
+    public void SEPlay(SEType type)
+    {
+        switch (type)
+        {
+            case SEType.Attack:
+                audio.PlayOneShot(se_attack);
+                break;
+
+            case SEType.FootSteps:
+                audio.PlayOneShot(se_footsteps);
+                break;
+        }
     }
 
 }

@@ -49,3 +49,4 @@ MonoBehaviour:
   enemyTagToSearch: Enemy_Ba
   playerAllyPrefabs: {fileID: 2670251432214332900, guid: 3bf806d6273b54b06a6e4672b8f709f9, type: 3}
   enemyPrefabs: {fileID: 2670251432214332900, guid: 7169bd03b189249f3a8632725eae6490, type: 3}
+  allies: {fileID: 7240520816894528296, guid: 24271ba9fdc6d4d409cc568e21b30c76, type: 3}

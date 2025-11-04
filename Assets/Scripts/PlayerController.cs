@@ -29,6 +29,12 @@ public class PlayerController : MonoBehaviour
 
     public bool isUnderPlayer = false; //プレイヤーのところに集まるフラグ
 
+    //音にまつわるコンポーネントとSE音情報
+    AudioSource audio;
+    public AudioClip se_attack;
+    public AudioClip se_jump;
+    public AudioClip se_footsteps;
+
     void Awake()
     {
         //リトライ時にHP初期化
@@ -37,6 +43,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audio = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
@@ -106,6 +113,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
+            SEPlay(SEType.Jump); //ジャンプ音を鳴らす
             rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             animator.SetBool("isJump", true);
             isJumping = true; //ジャンプ中フラグをtrue
@@ -129,18 +137,20 @@ public class PlayerController : MonoBehaviour
 
     void FootR()
     {
-        //本当はここに足音入れる
+        //足音を鳴らす
+        SEPlay(SEType.FootSteps);
     }
 
     void FootL()
     {
-        //本当はここに足音入れる
+        //足音を鳴らす
+         SEPlay(SEType.FootSteps);
     }
 
     void Hit()
     {
-        //攻撃ヒット時に使う？
-        // Debug.Log("攻撃ヒット");
+        //攻撃音を鳴らす
+        SEPlay(SEType.Attack); 
     }
 
     //ダメージ処理
@@ -167,6 +177,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(this.gameObject);
             GameManager.gameState = GameState.gameOver;
+            SoundManager.instance.StopBgm(); //曲を止める
         }
 
         //playerベースに入った時HP回復
@@ -183,6 +194,24 @@ public class PlayerController : MonoBehaviour
 
         //時間が経過したら無敵状態を解除
         isInvincible = false;
+    }
+
+    public void SEPlay(SEType type)
+    {
+        switch (type)
+        {
+            case SEType.Attack:
+                audio.PlayOneShot(se_attack);
+                break;
+
+            case SEType.Jump:
+                audio.PlayOneShot(se_jump);
+                break;
+
+            case SEType.FootSteps:
+                audio.PlayOneShot(se_footsteps);
+                break;
+        }
     }
 
 }

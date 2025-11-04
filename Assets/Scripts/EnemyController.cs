@@ -52,6 +52,11 @@ public class EnemyController : MonoBehaviour
 
     float enemyHP = 10;
 
+    //音にまつわるコンポーネントとSE音情報
+    AudioSource audio;
+    public AudioClip se_attack;
+    public AudioClip se_footsteps;
+
 
     //プレイヤー味方オブジェクトと距離を紐付けるクラス
     public class PlayerAllyDistance
@@ -140,6 +145,7 @@ public class EnemyController : MonoBehaviour
     //スタート処理
     void Start()
     {
+        audio = GetComponent<AudioSource>();
         attackTimer = Time.time;
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
@@ -429,7 +435,7 @@ public class EnemyController : MonoBehaviour
         if (GameManager.gameState == GameState.playing)
         {
             //NPCを生成する処理を呼び出す
-             GameManager.Instance.DelayAction(1f,GameManager.Instance.OnEnemyDestroyed);
+            GameManager.Instance.DelayAction(1f, GameManager.Instance.OnEnemyDestroyed);
         }
     }
 
@@ -445,9 +451,18 @@ public class EnemyController : MonoBehaviour
     }
 
 
-    void FootR() { /* 足音処理など */ }
-    void FootL() { /* 足音処理など */ }
-    void Hit() { /* 攻撃ヒット時の処理など */ }
+    void FootR()
+    { //足音
+        SEPlay(SEType.FootSteps);
+    }
+    void FootL()
+    { //足音
+        SEPlay(SEType.FootSteps);
+    }
+    void Hit()
+    {  //攻撃音
+        SEPlay(SEType.Attack);
+    }
 
     //以下ClosestObjectのオーバロードで同じメソッドを複数
     //オーバーロード最も近い敵のオブジェクトを返す
@@ -563,6 +578,20 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopRange);
+    }
+
+    public void SEPlay(SEType type)
+    {
+        switch (type)
+        {
+            case SEType.Attack:
+                audio.PlayOneShot(se_attack);
+                break;
+
+            case SEType.FootSteps:
+                audio.PlayOneShot(se_footsteps);
+                break;
+        }
     }
 
 }
