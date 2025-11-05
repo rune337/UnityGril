@@ -1,7 +1,6 @@
 # Unity Girl(個人制作)
 ## 概要
-Unityちゃんを動かして拠点を制圧したり、取り返したりして
-敵リーダーを倒すことを目指すゲームです。
+Unityちゃんを動かして拠点を制圧したり、取り返したりして敵リーダーを倒すことを目指すゲームです。
 拠点の数だけ味方NPCは復活できます。
 NPCはランダムな味方拠点に復活します。
 
@@ -25,10 +24,397 @@ https://rune337.github.io/WebUnityGirl/
 
 ## ゲームフロー
 * タイトル
+ゲームをスタートできます。
+infoにフリー素材の引用元を記載しています。
 
 * ゲームシーン
+拠点を制圧しつつ敵リーダの撃破を目指します。
+拠点を制圧すると味方が増えます。
+敵に拠点を制圧されると敵が増えます。
+拠点を取り返すことが可能です。
+拠点を攻撃してHPを0にできると色が変わります。
+青なら味方拠点、赤なら敵拠点になります。
+誰も制圧していない拠点は白色です。
+白色の拠点は拠点に入るだけで自分の拠点になります。
+拠点の数だけ味方は復活できます
+リーダーは復活できません。
 ![ゲームシーン](Readme_img/Image3.png)
 
 * 敗北画面
+タイトルに戻るか再プレイするか選びます。
+![敗北画面](Readme_img/Image5.png)
 
 * 勝利画面
+3秒でタイトルに戻ります。
+![敗北画面](Readme_img/Image6.png)
+
+## 操作方法
+十字キー:移動
+スペースキー:ジャンプ
+Pキー:攻撃
+Oキー:正面に盾展開(2秒で消える)
+Lキー:味方集合フラグONになり味方が集合。Player横の青いアイコン点灯でON。
+
+### 攻撃コンボ
+前回の攻撃から今回の攻撃までの時間が、コンボ時間を超えているかどうかで
+次の攻撃モーションに行くようにしています。
+```C#
+void AttackCombo()
+    {
+        float timeSinceLastClick = Time.time - lastClickTime; //前回クリックしてからの経過時間
+
+        //前回のクリックからの時間がコンボの猶予時間を超えている
+        if (timeSinceLastClick > clickMaxDelay)
+        {
+            clickCount = 1; //時間を越えると新しい攻撃にする
+        }
+        else
+        {
+            clickCount++; //時間内なので攻撃増加
+            if (clickCount > 5)
+                clickCount = 1; //コンボ数最大4なのでそれを超えたら1にリセットする
+        }
+        lastClickTime = Time.time;
+        animator.SetFloat("Attack", clickCount);
+        swordCollider.EnableSwordCollider(); //剣のコライダーを有効にするのを呼び出す
+    }
+```
+
+### NPC AI
+NavMeshAgentを使用しています
+以下の行動順序に従って行動します。
+味方行動順序
+1 プレイヤー集合フラグがONならプレイヤーについていく
+2 敵が範囲にいる
+3 敵リーダが範囲にいる
+4 Base Core(フリー拠点サーバー)が範囲にいる
+5 Enemy_Ba(敵拠点サーバー)が範囲にいる
+6 プレイヤーについていく
+7 Player_Ba(味方拠点サーバー)が範囲にいる →これないと味方拠点だけになった時に止まれなくなる
+それぞれの対象のオブジェクトのリストや配列との距離と比較して近いところのオブジェクトを引数として渡して移動するメソッドを呼び出しています。
+ifで入り口を広くして実行されたらそれより下は実行しないようにしています。
+
+```C#
+AllyController.cs
+//プレイヤー集合フラグがONの時、プレイヤーについていく
+        if (playerController.isUnderPlayer)
+        {
+            if (player != null)
+            {
+                float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+                if (distanceToPlayer <= playerRange)
+                {
+                    Move(player, distanceToPlayer);
+                    return;
+                }
+            }
+        }
+
+
+        //敵がいる時
+        if (enemy.Length != 0)
+        {
+            enemyDistance.Clear();
+            distanceEnemy = new float[enemy.Length]; //敵の距離を入れる配列の初期化
+
+            for (int i = 0; i < enemy.Length; i++)
+            {
+                distanceEnemy[i] = Vector3.Distance(enemy[i].transform.position, transform.position);
+                enemyDistance.Add(new EnemyDistance(enemy[i], distanceEnemy[i]));
+                if (enemyDistance.Count != 0)
+                {
+                    closestEnemy = ClosestObject(enemyDistance);
+                    closestEnemyDistance = Vector3.Distance(closestEnemy.transform.position, transform.position);
+
+                    if (closestEnemyDistance <= detectionRange)
+                    {
+                        Move(closestEnemy, closestEnemyDistance);
+                        return;
+                    }
+                }
+
+            }
+        }
+
+        //敵リーダーがいる時
+        if (enemyLeader != null)
+        {
+            distanceToEnemyLeader = Vector3.Distance(enemyLeader.transform.position, transform.position);
+            if (distanceToEnemyLeader <= detectionRange)
+            {
+                Move(enemyLeader, distanceToEnemyLeader);
+                return;
+            }
+        }
+
+        //ベースコアがいる時
+        if (GameManager.Instance.GetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
+        {
+            baseCoreDistanceInfo.Clear();
+
+            for (int i = 0; i < GameManager.Instance.GetFoundBaseObjects().Count; i++)
+            {
+                float distance = Vector3.Distance(GameManager.Instance.GetFoundBaseObjects()[i].transform.position, transform.position);
+                baseCoreDistanceInfo.Add(new BaseCoreDistanceInfo(GameManager.Instance.GetFoundBaseObjects()[i], distance));
+            }
+
+            if (baseCoreDistanceInfo.Count != 0)
+            {
+                closestBaseCore = ClosestObject(baseCoreDistanceInfo);
+                closestBaseCoreDistance = Vector3.Distance(closestBaseCore.transform.position, transform.position);
+                Debug.Log(closestBaseCore);
+                // Debug.Log(closestBaseCoreDistance);
+                if (closestBaseCoreDistance <= baseCoreDetectionRange)
+                {
+                    MoveCore(closestBaseCore, closestBaseCoreDistance);
+                    return;
+                }
+            }
+        }
+
+        //敵ベースコアがいる時
+        if (GameManager.Instance.EnemyGetFoundBaseObjects().Count != 0) //nullで空ではなく0になるので
+        {
+            enemyBaseCoreDistanceInfo.Clear();
+
+            for (int i = 0; i < GameManager.Instance.EnemyGetFoundBaseObjects().Count; i++)
+            {
+                float distance = Vector3.Distance(GameManager.Instance.EnemyGetFoundBaseObjects()[i].transform.position, transform.position);
+                enemyBaseCoreDistanceInfo.Add(new EnemyBaseCoreDistanceInfo(GameManager.Instance.EnemyGetFoundBaseObjects()[i], distance));
+            }
+
+            if (enemyBaseCoreDistanceInfo.Count != 0)
+            {
+                Debug.Log("敵コア");
+                closestEnemyBaseCore = ClosestObject(enemyBaseCoreDistanceInfo);
+                closestEnemyBaseCoreDistance = Vector3.Distance(closestEnemyBaseCore.transform.position, transform.position);
+                Debug.Log(closestEnemyBaseCore);
+                Debug.Log(closestEnemyBaseCoreDistance);
+                if (closestEnemyBaseCoreDistance <= baseCoreDetectionRange)
+                {
+                    MoveCore(closestEnemyBaseCore, closestEnemyBaseCoreDistance);
+                    return;
+                }
+            }
+        }
+
+        //プレイヤーがいる時
+        if (player != null)
+        {
+            float distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
+            if (distanceToPlayer <= playerRange)
+            {
+                Move(player, distanceToPlayer);
+                return;
+            }
+        }
+
+
+        //味方に近づいた時に止めないと全部拠点制圧して入ってきた味方止まるところないから
+        //味方ベースコアがいる時
+        if (GameManager.Instance.PlayerGetFoundBaseObjects().Count != 0)
+        {
+            Debug.Log("味方コア");
+            playerBaseCoreDistanceInfo.Clear();
+
+            for (int i = 0; i < GameManager.Instance.PlayerGetFoundBaseObjects().Count; i++)
+            {
+                float distance = Vector3.Distance(GameManager.Instance.PlayerGetFoundBaseObjects()[i].transform.position, transform.position);
+                playerBaseCoreDistanceInfo.Add(new PlayerBaseCoreDistanceInfo(GameManager.Instance.PlayerGetFoundBaseObjects()[i], distance));
+            }
+
+            if (playerBaseCoreDistanceInfo.Count != 0)
+            {
+                closestPlayerBaseCore = ClosestObject(playerBaseCoreDistanceInfo);
+                closestPlayerBaseCoreDistance = Vector3.Distance(closestPlayerBaseCore.transform.position, transform.position);
+                Debug.Log(closestPlayerBaseCore);
+                Debug.Log(closestPlayerBaseCoreDistance);
+                if (closestPlayerBaseCoreDistance <= baseCoreDetectionRange)
+                {
+                    MoveCore(closestPlayerBaseCore, closestPlayerBaseCoreDistance);
+                    return;
+                }
+            }
+        }
+```
+
+### 拠点変化
+拠点の範囲のコライダーの中に拠点のコアがあります。
+初回侵入時はコライダーに侵入した時にコアのタグを変えます
+以降はHPが0になった時に現在とは別のタグになります。
+味方なら敵に、敵なら味方になります。
+```C#
+BaseRange.cs
+//タグを変える用のメソッド
+    public void ChangeCoreTag()
+    {
+        //敵からプレイヤーにする
+        if (this.tag == "Enemy_Ba")
+        {
+            this.tag = "Player_Ba";
+            baseCore.tag = "Player_Ba";
+            // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+            baseCoreChangeColor.SetColor(playerColor);
+            baseCoreDamageTag.DamageTag();
+            StartCoroutine(DelayedActionCoroutine());
+        }
+
+        //プレイヤーから敵にする
+        else if (this.tag == "Player_Ba")
+        {
+            this.tag = "Enemy_Ba";
+            baseCore.tag = "Enemy_Ba";
+            // 取得した baseCoreChangeColor インスタンスの SetColor を呼び出す
+            baseCoreChangeColor.SetColor(enemyColor);
+            baseCoreDamageTag.DamageTag();
+            StartCoroutine(DelayedActionCoroutine());
+        }
+    }
+
+
+```
+
+### 拠点のダメージ判定
+拠点は味方の攻撃で変化してしまわないように、
+攻撃者のタグを判別してダメージを受けるようにする。
+プレイヤー拠点なら攻撃者にプレイヤーのタグ含まれているか、
+敵拠点ならエネミーのタグ含まれているか
+```C#
+BaseCore.cs
+public void DamageTag()
+    {
+        //現在のcoreのタグを元に攻撃者のタグに含まれる文字を検索する文字を決定する
+        if (this.tag == "Player_Ba")
+        {
+            target = "Player";
+        }
+        else if (this.tag == "Enemy_Ba")
+        {
+            target = "Enemy";
+        }
+        else if (this.tag == "Base")
+        {
+            target = "Base";
+        }
+    }
+
+BaseCore.cs
+     void OnTriggerEnter(Collider other)
+    {
+        if (isInvincible) //無敵状態なら何もしない
+            return;
+
+        // Debug.Log(other.transform.root.tag);
+
+        //攻撃者のタグに自分のタグに含む文字と同じ文字が含まれていない時=陣営同じじゃない時
+        //other.transform.parent.tagだと直近の親とってくるだけなので一番上の親とりたい時はrootにする
+        if (!other.transform.root.tag.Contains(target))
+        {
+
+            //剣に当たった時ダメージ処理
+            if (other.gameObject.CompareTag("EnemySword") || other.gameObject.CompareTag("PlayerSword"))
+            {
+                isInvincible = true; //ダメージを受けたら無敵
+                coreHP--;
+                Debug.Log("コアのHP " + coreHP);
+                Debug.Log(target);
+
+                StartCoroutine(SetInvincibilityTimer());
+            }
+        }
+    }
+
+
+```
+
+### 一番近い拠点の判別
+GameManagerから受け取ったリストのオブジェクトとの距離を計算して距離とオブジェクトをセットにしてインスタンスを作って、
+リストにセットの値として追加する。
+一番近い距離を比較するメソッドでリストの要素を比較して一番近い拠点を戻り値として返す。
+```C#
+AllyController.cs
+    //ベースコアと距離を結びつけるクラス
+    public class BaseCoreDistanceInfo
+    {
+        public GameObject baseCoreObject;
+        public float baseCoreDistance;
+
+        //コンストラクタ
+        public BaseCoreDistanceInfo(GameObject obj, float dist)
+        {
+            baseCoreObject = obj;
+            baseCoreDistance = dist;
+        }
+    }
+
+
+    //ベースコア距離クラスを使ってベースコアの距離リスト定義
+    private List<BaseCoreDistanceInfo> baseCoreDistanceInfo = new List<BaseCoreDistanceInfo>();
+
+    //一番近い距離を比較するメソッド
+     public GameObject ClosestObject(List<BaseCoreDistanceInfo> baseCoreDistanceInfo)
+    {
+        Debug.Log("ベースコアのオーバーロード");
+        if (baseCoreDistanceInfo.Count == 0)
+        {
+            return null;
+        }
+        //リストの最初の要素を最も近い値として定義
+        BaseCoreDistanceInfo firstInfo = baseCoreDistanceInfo[0];
+
+        // 2番目の要素から最後までループして比較
+        for (int i = 1; i < baseCoreDistanceInfo.Count; i++)
+        {
+            if (baseCoreDistanceInfo[i].baseCoreDistance < firstInfo.baseCoreDistance)
+            {
+                // より近いものが見つかったら更新
+                firstInfo = baseCoreDistanceInfo[i];
+            }
+        }
+        return firstInfo.baseCoreObject;
+    }
+```
+
+
+### 剣のダメージ判定
+常に剣にコライダーをつけていると、攻撃していない時もダメージが発生してしまう。
+攻撃のアニメーションの時だけ剣につけているコライダーを有効にする。
+```C#
+void Awake()
+    {
+        swordCollider = sword.GetComponent<Collider>();
+        // swordCollider = GetComponent<Collider>(); //このスクリプトと同じGameObjectにあるコライダーを取得
+        swordCollider.enabled =false; //最初はコライダーを無効にしておく
+    }
+
+    // Update is called once per frame
+    public void EnableSwordCollider()
+    {
+        swordCollider.enabled = true;
+        Debug.Log("剣のコライダーを有効にしました。");
+    }
+    public void DisableSwordCollider()
+    {
+        swordCollider.enabled = false;
+        Debug.Log("剣のコライダーを無効にしました。");
+    }
+}
+```
+
+### 工夫
+敵や味方の行動や自動生成でうまく行かないことが多かったです。
+大まかに何かif文で分けるや配列で取得したものを使うなど思いついても、それを具体的な処理にまで形にできないこともありました。
+AIなどを使用しつつ、単発だとうまく動いても組み合わせるとうまく動かなかったりするので、元ものをデバッグで処理を追いながら、
+処理を簡単にしてみたり処理を分けてみたりしました。
+ある程度把握できると値とオブジェクトはセットで扱わないといけないのでないかなどと、やりたいことと結びつきそうなところも出てきましたので
+値とオブジェクトを結びつける書き方をAIに聞きつつ組み込んでデバッグしながらプログラムを組んでいきました。
+
+### 今後の課題
+デバッグしながら作成になっており、
+プログラムの細かい処理までフローチャートのように意識してわからなくても考え抜いて作り、
+それでもわからなくてもできるまで考えて自分だけで考える力を養うというところが足りていないので、
+作ったものを振り返りつつ、自分で処理を考えるという力を養いたいです。
+
+機能的な面では、ミニマップやキャラの色分け的なところができていないので、
+それを追加修正するところになります。
+また、モーションを自分で作れないのでモーションなども勉強してアニメーションの幅を広げたいです。
