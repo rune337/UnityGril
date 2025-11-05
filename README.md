@@ -45,11 +45,11 @@ infoにフリー素材の引用元を記載しています。
 
 * 敗北画面
 タイトルに戻るか再プレイするか選びます。
-![敗北画面](Readme_img/Image5.png)
+![敗北画面](Readme_img/Image5.png)<br><br><br>
 
 * 勝利画面
 3秒でタイトルに戻ります。
-![敗北画面](Readme_img/Image6.png)
+![敗北画面](Readme_img/Image6.png)<br><br><br>
 
 ## 操作方法
 十字キー:移動
