@@ -24,8 +24,8 @@ https://rune337.github.io/WebUnityGirl/
 
 ## ゲームフロー
 * タイトル
-ゲームをスタートできます。<br>
-infoにフリー素材の引用元を記載しています。
+GameStart:ゲームをスタートできます。<br>
+Info:フリー素材の引用元を記載しています。
 ![タイトル画面](Readme_img/Image7.png)
 
 * ゲームシーン<br>
