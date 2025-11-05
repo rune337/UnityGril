@@ -23,7 +23,7 @@ Melee Weapons Pack [Swords - Axes]:武器に使用<br>
 https://rune337.github.io/WebUnityGirl/
 
 ## ゲームフロー
-* タイトル
+* タイトル<br>
 GameStart:ゲームをスタートできます。<br>
 Info:フリー素材の引用元を記載しています。
 ![タイトル画面](Readme_img/Image7.png)
