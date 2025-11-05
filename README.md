@@ -26,6 +26,7 @@ https://rune337.github.io/WebUnityGirl/
 * タイトル
 ゲームをスタートできます。
 infoにフリー素材の引用元を記載しています。
+![タイトル画面](Readme_img/Image7.png)
 
 * ゲームシーン
 拠点を制圧しつつ敵リーダの撃破を目指します。
