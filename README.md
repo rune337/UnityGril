@@ -28,7 +28,8 @@ https://rune337.github.io/WebUnityGirl/
 infoにフリー素材の引用元を記載しています。
 ![タイトル画面](Readme_img/Image7.png)
 
-* ゲームルール<br>
+* ゲームシーン<br>
+ルール<br>
 勝利条件:敵リーダの撃破<br>
 敗北条件:プレイヤーの敗北<br><br>
 拠点を制圧すると味方が生成されます。<br>
