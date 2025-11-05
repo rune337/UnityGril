@@ -9,7 +9,7 @@ NPCはランダムな味方拠点に復活します。
 * 使用エンジン：Unity Editorバージョン 6000.0.54f1
 * シーンレンダー：Universal 3D 
 * 使用言語：C#
-* 使用アセット：UnityアセットストアとUnityちゃん公式ページのものを使用
+* 使用アセット：UnityアセットストアとUnityちゃん公式ページのものを使用<br>
 unity-chan! :敵、味方、プレイヤーキャラ<br>
 TileableBricksWall:拠点の壁の模様<br>
 Procedural Terrain Painter:地形を生成するテライン用の素材<br>
