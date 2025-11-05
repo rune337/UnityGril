@@ -9,13 +9,13 @@ public class PlayerController : MonoBehaviour
     Vector3 moving; // diff, Player_pos は不要になります
     Rigidbody rb;
     Animator animator;
-    public float jumpPower = 10.0f;
+    public float jumpPower = 10.0f; //ジャンプ力
 
     public Transform groundCheck; // 接地判定用のオブジェクト
     public LayerMask groundLayer; // 接地判定で判定する地面のレイヤー
     private bool isGrounded; // 接地しているかどうかのフラグ
 
-    bool isJumping;
+    bool isJumping; //ジャンプフラグ
 
     public EnemyLeaderController enemyLeaderController; //スクリプト参照用のオブジェクト
     public EnemyController enemyController; //スクリプト参照用のオブジェクト
@@ -35,6 +35,8 @@ public class PlayerController : MonoBehaviour
     public AudioClip se_jump;
     public AudioClip se_footsteps;
 
+    SwordAttack swordAttack;
+
     void Awake()
     {
         //リトライ時にHP初期化
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour
         audio = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        swordAttack = GetComponent<SwordAttack>();
 
         // cameraTransformが設定されていない場合は、メインカメラを自動で取得
         if (cameraTransform == null)
@@ -92,6 +95,7 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 0.2f);
         }
 
+
         //アニメーション設定
         animator.SetBool("isWalk", x != 0 || z != 0);
 
@@ -117,13 +121,14 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             animator.SetBool("isJump", true);
             isJumping = true; //ジャンプ中フラグをtrue
-            Invoke("OffJumping", 0.5f);
+            StartCoroutine(OffJumping()); //ジャンプフラグを解除するコルーチンを呼び出す
         }
     }
 
-    //時間差でジャンプフラグを自然解除 ※後でこルーチンでもできるか試す
-    void OffJumping()
+    //ジャンプフラグを解除するコルーチン
+    IEnumerator OffJumping()
     {
+        yield return new WaitForSeconds(0.5f);
         isJumping = false;
     }
 
@@ -131,8 +136,17 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 velocity = rb.linearVelocity;
         // movingのY成分は0なので、既存のy速度を維持
-        Vector3 moveVelocity = new Vector3(moving.x, velocity.y, moving.z);
-        rb.linearVelocity = moveVelocity;
+        
+        //攻撃中の時と攻撃中でない時
+        if (swordAttack.playerIsAttack)
+        {
+            rb.linearVelocity = new Vector3(0, velocity.y, 0);//攻撃中は止まる
+        }
+        else
+        {
+            Vector3 moveVelocity = new Vector3(moving.x, velocity.y, moving.z);//攻撃中じゃなければ動く
+            rb.linearVelocity = moveVelocity;
+        }
     }
 
     void FootR()
@@ -144,13 +158,13 @@ public class PlayerController : MonoBehaviour
     void FootL()
     {
         //足音を鳴らす
-         SEPlay(SEType.FootSteps);
+        SEPlay(SEType.FootSteps);
     }
 
     void Hit()
     {
         //攻撃音を鳴らす
-        SEPlay(SEType.Attack); 
+        SEPlay(SEType.Attack);
     }
 
     //ダメージ処理

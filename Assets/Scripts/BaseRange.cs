@@ -8,10 +8,6 @@ public class BaseRange : MonoBehaviour
     public static Color enemyColor = Color.red; //敵陣営のコアの色
     public static Color playerColor = Color.blue; //味方陣営のコアの色
 
-    //ChangeColorクラスのメソッドを使用するために、呼び出し側のクラスで実体をインスタンスとして作る→これをしてもUnityはMonobehaviorでクラス継承していてGameobjectにスクリプトをアタッチすることでインスタンスを生成するので、
-    //  自分でインスタンスにしても何もゲームオブジェクトがアタッチされておらず空になり何もできない
-    // ChangeColor changeColor = new ChangeColor();
-
     private ChangeColor baseCoreChangeColor; // private にして Start() で取得するパターン
     private BaseCore baseCoreDamageTag;
     public GameObject allyPrefabs;
@@ -19,19 +15,10 @@ public class BaseRange : MonoBehaviour
 
     public GameObject SpawnPoint; // 敵生成位置
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         baseCoreChangeColor = baseCore.GetComponent<ChangeColor>();
         baseCoreDamageTag = baseCore.GetComponent<BaseCore>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void OnTriggerEnter(Collider other)
@@ -71,7 +58,6 @@ public class BaseRange : MonoBehaviour
                 baseCoreChangeColor.SetColor(enemyColor);
                 GameManager.Instance.RefreshBaseCoreOnce();
 
-
                 // GameObject obj = Instantiate(
                 // enemyPrefabs,
                 // SpawnPoint.transform.position,
@@ -107,7 +93,6 @@ public class BaseRange : MonoBehaviour
             baseCoreChangeColor.SetColor(enemyColor);
             baseCoreDamageTag.DamageTag();
             StartCoroutine(DelayedActionCoroutine());
-
         }
     }
 

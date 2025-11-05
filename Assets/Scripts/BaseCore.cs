@@ -7,7 +7,7 @@ public class BaseCore : MonoBehaviour
     public float invincibilityDuration = 0.5f; //無敵時間
 
     public  int coreHP = 10; //coreHP
-    string target;
+    string target; //攻撃者の文字列変数
 
     // BaseRangeへの参照を追加
     public BaseRange baseRange;
@@ -24,8 +24,7 @@ public class BaseCore : MonoBehaviour
         if (coreHP <= 0)
         {
             baseRange.ChangeCoreTag();
-            coreHP = 10;//HPをリセット0 HPは攻撃を受けなくても0で剣に触れると切り替わってしまうので
-            Debug.Log("タグ切り替え");
+            coreHP = 10;//HP0のままだと0で剣に触れるとすぐに切り替わってしまうので
         }
     }
 
@@ -54,6 +53,7 @@ public class BaseCore : MonoBehaviour
         }
     }
 
+    //無敵時間のコルーチン
     IEnumerator SetInvincibilityTimer()
     {
         //指定された時間だけ待機
@@ -64,6 +64,7 @@ public class BaseCore : MonoBehaviour
 
     }
 
+    //ダメージを受ける攻撃者を決定する
     public void DamageTag()
     {
         //現在のcoreのタグを元に攻撃者のタグに含まれる文字を検索する文字を決定する
@@ -79,6 +80,5 @@ public class BaseCore : MonoBehaviour
         {
             target = "Base";
         }
-        Debug.Log($"Awake Debug: Core Tag is '{this.tag}', Final Target set to '{target}'");
     }
 }

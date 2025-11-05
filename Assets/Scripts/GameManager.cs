@@ -17,7 +17,7 @@ public enum GameState
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public bool IsQuitting { get; private set; } = false; //ゲーム終了中かどうか
+    public bool IsQuitting { get; private set; } = false; //ゲーム終了中かどうか、アプリ終了時にNPCを生成しないようにするため、EnemyControllerとAllyControllerで呼び出す
 
 
 
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     public GameObject playerAllyPrefabs; //味方NPC生成プレハブ素材
     public GameObject enemyPrefabs; //敵NPC生成プレハブ素材
 
-    //ゲーム終了中かどうかは判別する元々定義されているメソッド
+    //ゲーム終了中かどうかを判別する元々定義されているメソッド
     private void OnApplicationQuit()
     {
         IsQuitting = true;

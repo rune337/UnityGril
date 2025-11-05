@@ -7,22 +7,23 @@ public class SwordAttack : MonoBehaviour
 
     float clickCount = 0; //クリック回数(プレイヤーの攻撃回数)
     float lastClickTime = 0f; //前回クリックしたときの Time.time を記録しておく変数
-    float clickMaxDelay = 1.0f; //クリックの猶予時間
+    float clickMaxDelay = 3.0f; //クリックの猶予時間
     public bool playerIsAttack = false; //攻撃中フラグ
     public SwordCollider swordCollider;
 
     Animator animator;
     Rigidbody rb;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         swordCollider = GetComponentInChildren<SwordCollider>(); //インスペクターでアタッチしてもnullになるので自動取得
-        
+
     }
-    // Update is called once per frame
+    
+    
     void Update()
     {
         //攻撃のアニメーション
@@ -38,6 +39,8 @@ public class SwordAttack : MonoBehaviour
     void AttackCombo()
     {
         float timeSinceLastClick = Time.time - lastClickTime; //前回クリックしてからの経過時間
+
+        //前回のクリックからの時間がコンボの猶予時間を超えている
         if (timeSinceLastClick > clickMaxDelay)
         {
             clickCount = 1; //時間を越えると新しい攻撃にする

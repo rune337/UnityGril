@@ -123,6 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d6b2a90a03d4c2caff9b7521db33cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseCore: {fileID: 1028991451233748741}
   invincibilityDuration: 0.5
   coreHP: 10
   baseRange: {fileID: 8636500585005196916, guid: 7241bf31f0d114662926cffb2d396e78, type: 3}

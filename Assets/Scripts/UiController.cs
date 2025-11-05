@@ -4,16 +4,16 @@ using UnityEngine.UI;
 
 public class UiController : MonoBehaviour
 {
-    public Slider playerLifeSlider;
-    public Slider enemyLifeSlider;
+    public Slider playerLifeSlider; //プレイヤーHPスライダーをアタッチする変数
+    public Slider enemyLifeSlider; //敵HPスライダーをアタッチする変数
 
-    int currentPlayerHP;
-    int currentEnemyHP;
+    int currentPlayerHP; //現在のプレイヤーHPを入れる変数
+    int currentEnemyHP; //現在の敵HPを入れる変数
 
-    public GameObject gameOverPanel;
-    public GameObject gameClearPanel;
-    public GameObject playerHPPanel;
-    public GameObject enemyHPPanel;
+    public GameObject gameOverPanel; //ゲームオーバパネルオブジェクトをアタッチする変数
+    public GameObject gameClearPanel; //ゲームクリアパネルオブジェクトをアタッチする変数
+    public GameObject playerHPPanel; //プレイヤーHPパネルオブジェクトをアタッチする変数
+    public GameObject enemyHPPanel; //エネミーHPパネルオブジェクトをアタッチする変数
     public GameObject isUnderPlayerLamp; //プレイヤー集合フラグのランプ
 
     public GameObject player;
@@ -31,17 +31,17 @@ public class UiController : MonoBehaviour
         currentEnemyHP = EnemyLeaderController.enemyLeaderHP;
         enemyLifeSlider.value = currentEnemyHP;
 
+        //パネルを非表示にする
         gameOverPanel.SetActive(false);
         gameClearPanel.SetActive(false);
 
+       //HPパネルを表示する
         playerHPPanel.SetActive(true);
         enemyHPPanel.SetActive(true);
+        
         isUnderPlayerLamp.SetActive(false); //プレイヤー集合フラグのランプ初期はfalseなので表示しない
-
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         //プレイヤーのHPゲージ更新
@@ -52,7 +52,7 @@ public class UiController : MonoBehaviour
         currentEnemyHP = EnemyLeaderController.enemyLeaderHP;
         enemyLifeSlider.value = currentEnemyHP;
 
-        
+        //プレイヤー集合フラグに応じて表示非表示にする
         if (playerController.isUnderPlayer)
         {
             isUnderPlayerLamp.SetActive(true);
@@ -62,7 +62,8 @@ public class UiController : MonoBehaviour
             isUnderPlayerLamp.SetActive(false);
         }
 
-        if (GameManager.gameState == GameState.gameOver)
+        
+        if (GameManager.gameState == GameState.gameOver) //ゲームオーバの時ゲームオーバーパネルを表示してHPとプレイヤー集合フラグを非表示にする
         {
             gameOverPanel.SetActive(true);
             playerHPPanel.SetActive(false);
@@ -74,7 +75,7 @@ public class UiController : MonoBehaviour
             Cursor.visible = true; //カーソルを表示
 
         }
-        else if (GameManager.gameState == GameState.gameClear)
+        else if (GameManager.gameState == GameState.gameClear) //ゲームクリアの時ゲームクリアパネルを表示してHPとプレイヤー集合フラグを非表示にする
         {
             gameClearPanel.SetActive(true);
             playerHPPanel.SetActive(false);
