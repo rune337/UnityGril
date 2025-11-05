@@ -21,3 +21,13 @@ Melee Weapons Pack [Swords - Axes]:武器に使用
 * 使用ツール:GitHub、SorceTree、VisualStudioCode
 
 ## サンプルゲーム
+https://rune337.github.io/WebUnityGirl/
+
+## ゲームフロー
+* タイトル
+
+* ゲームシーン
+
+* 敗北画面
+
+* 勝利画面
