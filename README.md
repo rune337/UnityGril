@@ -10,12 +10,12 @@ NPCはランダムな味方拠点に復活します。
 * シーンレンダー：Universal 3D 
 * 使用言語：C#
 * 使用アセット：UnityアセットストアとUnityちゃん公式ページのものを使用
-unity-chan! :敵、味方、プレイヤーキャラ
-TileableBricksWall:拠点の壁の模様
-Procedural Terrain Painter:地形を生成するテライン用の素材
-Fantasy Skybox FREE:空用の素材
-RPG Character Mecanim Animation Pack FREE:キャラクターのモーション用のアニメーション
-Melee Weapons Pack [Swords - Axes]:武器に使用
+unity-chan! :敵、味方、プレイヤーキャラ<br>
+TileableBricksWall:拠点の壁の模様<br>
+Procedural Terrain Painter:地形を生成するテライン用の素材<br>
+Fantasy Skybox FREE:空用の素材<br>
+RPG Character Mecanim Animation Pack FREE:キャラクターのモーション用のアニメーション<br>
+Melee Weapons Pack [Swords - Axes]:武器に使用<br>
 * Fontデータ： Noto Sans JP-Medium SDF (TMP_Font Asset)
 * 使用ツール:GitHub、SorceTree、VisualStudioCode
 
@@ -28,8 +28,7 @@ https://rune337.github.io/WebUnityGirl/
 infoにフリー素材の引用元を記載しています。
 ![タイトル画面](Readme_img/Image7.png)
 
-* ゲームシーン
-ゲームルール<br>
+* ゲームルール<br>
 勝利条件:敵リーダの撃破<br>
 敗北条件:プレイヤーの敗北<br>
 拠点を制圧すると味方が生成されます。<br>
