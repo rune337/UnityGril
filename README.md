@@ -27,7 +27,10 @@ Info:フリー素材の引用元を記載しています。
 ![タイトル画面](Readme_img/Image7.png)
 
 * ゲームシーン<br>
-![ゲームシーン](Readme_img/Image3.png)<br><br><br>
+![ゲームシーン](Readme_img/Image3.png)<br>
+![ゲームシーン2](Readme_img/Image8.png)<br>
+![ゲームシーン3](Readme_img/Image9.png)<br>
+![ゲームシーン4](Readme_img/Image10.png)<br><br><br>
 
 * 敗北画面
 タイトルに戻るか再プレイするか選びます。
