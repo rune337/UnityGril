@@ -61,6 +61,37 @@ Pキーまたは左クリック:攻撃、押しっぱなしまたは3秒以内�
 Oキー:正面に壁展開(2秒で消える)<br>
 Lキー:味方集合フラグONになり味方が集合、Player横の青いアイコン点灯でON<br>
 
+## プログラム
+### スクリプト構成
+キャラクター<br>
+PlayerController.cs:プレイヤーの操作<br>
+AllyController.cs:味方NPCを自動操作<br>
+EnemyController.cs:敵NPCを自動操作<br>
+EnemyLeaderController.cs:敵リーダーを自動操作<br><br>
+
+拠点<br>
+BaseCore.cs:拠点コア自身のダメージ判定<br>
+aseRange.cs:拠点への侵入判別、拠点のタグ変更、拠点コアの色変更<br>
+ChangeColor.cs拠点コアの色変更<br><br>
+
+UI<br>
+UiController.cs:バトル中のUI管理<br>
+TitleUiController.cs:タイトル中のUI管理<br><br>
+
+管理<br>
+SoundManger.cs:BGM、SE管理<br>
+GameManager.cs:ゲームステータス管理、拠点のリスト管理、NPC生成管理<br>
+ChangeScene.cs:シーン変更管理<br><br>
+
+その他<br>
+ShieldController.cs:プレイヤーの正面に壁展開<br>
+SwordCollider.cs:剣のコライダーオンオフ<br>
+SwordAttack.cs:プレイヤーの攻撃コンボ<br>
+CameraController.cs:カメラ操作<br><br>
+
+
+
+
 ### 攻撃コンボ
 前回の攻撃から今回の攻撃までの時間が、コンボ時間を超えているかどうかで
 次の攻撃モーションに行くようにしています。
