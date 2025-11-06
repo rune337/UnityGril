@@ -15,7 +15,7 @@ Fantasy Skybox FREE:空用の素材<br>
 RPG Character Mecanim Animation Pack FREE:キャラクターのモーション用のアニメーション<br>
 Melee Weapons Pack [Swords - Axes]:武器に使用<br>
 * Fontデータ： Noto Sans JP-Medium SDF (TMP_Font Asset)
-* 使用ツール:GitHub、SorceTree、VisualStudioCode、Chrome、Safari、Chatgpt、Google AI Studio、 Google Gemini
+* 使用ツール:GitHub、SorceTree、VisualStudioCode、Chrome、Safari、Chatgpt、Google AI Studio、 Google Gemini、Macbook
 
 ## サンプルゲーム
 https://rune337.github.io/WebUnityGirl/
